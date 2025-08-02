@@ -1805,7 +1805,7 @@
 				
 				// Check if documents bucket exists
 				const investorBucket = buckets.find(bucket => bucket.name === 'investor-files');
-				if (!documentsBucket) {
+				if (!investorBucket) {
 					console.log('� Documents bucket not found. Please create it in Supabase dashboard');
 					console.log('Go to Storage > Create new bucket > Name: documents > Make it public');
 				} else {
