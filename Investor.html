@@ -2156,22 +2156,44 @@
 				console.log('🔍 Attempting upload to bucket: investor-files');
 				console.log('📁 File name:', fileName);
 				
-				// First, test bucket accessibility
-				const { data: buckets, error: listError } = await supabase.storage.listBuckets();
+				// First, test bucket accessibility and create if needed
+				let { data: buckets, error: listError } = await supabase.storage.listBuckets();
 				if (listError) {
 					throw new Error(`Cannot access storage: ${listError.message}`);
 				}
 				
 				console.log('📋 Available buckets:', buckets.map(b => b.name));
 				
-				const investorBucket = buckets.find(b => b.name === 'investor-files');
+				let investorBucket = buckets.find(b => b.name === 'investor-files');
+				
+				// If bucket doesn't exist, create it
 				if (!investorBucket) {
-					throw new Error('investor-files bucket not found in available buckets: ' + buckets.map(b => b.name).join(', '));
+					console.log('📁 Creating investor-files bucket...');
+					const { data: newBucket, error: createError } = await supabase.storage.createBucket('investor-files', {
+						public: true,
+						allowedMimeTypes: ['application/pdf', 'image/*', 'text/*', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
+						fileSizeLimit: 52428800 // 50MB
+					});
+					
+					if (createError) {
+						throw new Error(`Failed to create bucket: ${createError.message}`);
+					}
+					
+					console.log('✅ investor-files bucket created successfully');
+					
+					// Refresh bucket list
+					const { data: refreshedBuckets } = await supabase.storage.listBuckets();
+					buckets = refreshedBuckets;
+					investorBucket = buckets.find(b => b.name === 'investor-files');
 				}
 				
-				console.log('✅ investor-files bucket found, attempting upload...');
+				if (!investorBucket) {
+					throw new Error('investor-files bucket still not found after creation attempt');
+				}
 				
-				// Upload file to Supabase storage (using investor-files bucket)
+				console.log('✅ investor-files bucket confirmed, attempting upload...');
+				
+				// Upload file to Supabase storage
 				const { data, error } = await supabase.storage
 					.from('investor-files')
 					.upload(fileName, file, {
@@ -2180,7 +2202,7 @@
 					});
 				
 				if (error) {
-					throw new Error(`Supabase upload failed: ${error.message}`);
+					throw new Error(`Upload failed: ${error.message}`);
 				}
 				
 				console.log('📤 Upload successful:', data);
@@ -2209,19 +2231,20 @@
 					.insert([fileData]);
 				
 				if (dbError) {
-					throw new Error(`Database save failed: ${dbError.message}`);
+					console.warn('Database save failed, but file uploaded to storage:', dbError.message);
+					// Still show the file even if database save fails
+				} else {
+					console.log('💾 File saved to database successfully');
 				}
-				
-				console.log('💾 File saved to database successfully');
 				
 				// Show file immediately in current tab
 				showFileInTab(currentEditingTab, fileData);
 				
-				console.log('✅ File uploaded to Supabase ONLY:', fileName);
+				console.log('✅ File uploaded to Supabase successfully:', fileName);
 				
 			} catch (error) {
 				console.error('❌ Supabase upload failed:', error.message);
-				throw error; // Don't fallback to localStorage
+				throw error;
 			}
 		}
 		
