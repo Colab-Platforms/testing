@@ -2153,9 +2153,9 @@
 			const fileName = `uploads/${currentEditingTab}/${Date.now()}_${file.name}`;
 			
 			try {
-				// Upload file to Supabase storage
+				// Upload file to Supabase storage (using investor-files bucket)
 				const { data, error } = await supabase.storage
-					.from('documents')
+					.from('investor-files')
 					.upload(fileName, file, {
 						cacheControl: '3600',
 						upsert: false
@@ -2167,7 +2167,7 @@
 				
 				// Get public URL
 				const { data: urlData } = supabase.storage
-					.from('documents')
+					.from('investor-files')
 					.getPublicUrl(fileName);
 				
 				const fileData = {
@@ -2446,7 +2446,7 @@
 					// Delete from Supabase storage
 					if (fileData.supabase_path || fileData.supabasePath) {
 						const { error: storageError } = await supabase.storage
-							.from('documents')
+							.from('investor-files')
 							.remove([fileData.supabase_path || fileData.supabasePath]);
 						
 						if (storageError) {
