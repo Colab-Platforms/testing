@@ -1804,7 +1804,7 @@
 				}
 				
 				// Check if documents bucket exists
-				const documentsBucket = buckets.find(bucket => bucket.name === 'documents');
+				const investorBucket = buckets.find(bucket => bucket.name === 'investor-files');
 				if (!documentsBucket) {
 					console.log('� Documents bucket not found. Please create it in Supabase dashboard');
 					console.log('Go to Storage > Create new bucket > Name: documents > Make it public');
@@ -2153,6 +2153,24 @@
 			const fileName = `uploads/${currentEditingTab}/${Date.now()}_${file.name}`;
 			
 			try {
+				console.log('🔍 Attempting upload to bucket: investor-files');
+				console.log('📁 File name:', fileName);
+				
+				// First, test bucket accessibility
+				const { data: buckets, error: listError } = await supabase.storage.listBuckets();
+				if (listError) {
+					throw new Error(`Cannot access storage: ${listError.message}`);
+				}
+				
+				console.log('📋 Available buckets:', buckets.map(b => b.name));
+				
+				const investorBucket = buckets.find(b => b.name === 'investor-files');
+				if (!investorBucket) {
+					throw new Error('investor-files bucket not found in available buckets: ' + buckets.map(b => b.name).join(', '));
+				}
+				
+				console.log('✅ investor-files bucket found, attempting upload...');
+				
 				// Upload file to Supabase storage (using investor-files bucket)
 				const { data, error } = await supabase.storage
 					.from('investor-files')
@@ -2165,10 +2183,14 @@
 					throw new Error(`Supabase upload failed: ${error.message}`);
 				}
 				
+				console.log('📤 Upload successful:', data);
+				
 				// Get public URL
 				const { data: urlData } = supabase.storage
 					.from('investor-files')
 					.getPublicUrl(fileName);
+				
+				console.log('🔗 Public URL generated:', urlData.publicUrl);
 				
 				const fileData = {
 					name: file.name,
@@ -2190,13 +2212,15 @@
 					throw new Error(`Database save failed: ${dbError.message}`);
 				}
 				
+				console.log('💾 File saved to database successfully');
+				
 				// Show file immediately in current tab
 				showFileInTab(currentEditingTab, fileData);
 				
 				console.log('✅ File uploaded to Supabase ONLY:', fileName);
 				
 			} catch (error) {
-				console.error('Supabase upload failed:', error.message);
+				console.error('❌ Supabase upload failed:', error.message);
 				throw error; // Don't fallback to localStorage
 			}
 		}
