@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="search.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+    <title>Admin Login - Empower India</title>
+    <style>
+        /* Admin Panel Styles */
+        .admin-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .admin-login {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+        
+        .admin-login h2 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 1.8rem;
+        }
+        
+        .admin-form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .admin-form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #34495e;
+        }
+        
+        .admin-form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        
+        .admin-form-group input:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+        
+        .admin-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .admin-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.4);
+        }
+        
+        .admin-error {
+            color: #e74c3c;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        
+        .success-message {
+            color: #27ae60;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Admin Login Overlay -->
+    <div id="adminOverlay" class="admin-overlay">
+        <div class="admin-login">
+            <h2>🔐 Admin Login</h2>
+            <p style="color: #666; margin-bottom: 25px;">Access Investor Relations Admin Panel</p>
+            <form id="adminLoginForm">
+                <div class="admin-form-group">
+                    <label for="adminEmail">Email:</label>
+                    <input type="email" id="adminEmail" required placeholder="admin@empowerindia.com">
+                </div>
+                <div class="admin-form-group">
+                    <label for="adminPassword">Password:</label>
+                    <input type="password" id="adminPassword" required placeholder="Enter password">
+                </div>
+                <button type="submit" class="admin-btn">🚀 Login</button>
+                <div id="adminError" class="admin-error"></div>
+                <div id="adminSuccess" class="success-message"></div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Admin Configuration
+        const ADMIN_CREDENTIALS = {
+            email: 'admin@empowerindia.com',
+            password: 'admin123'
+        };
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if already logged in
+            const storedLogin = localStorage.getItem('adminLoggedIn');
+            if (storedLogin === 'true') {
+                // Already logged in, redirect to investor page
+                redirectToInvestorPage();
+            }
+        });
+
+        // Admin Login Form Handler
+        document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            const errorDiv = document.getElementById('adminError');
+            const successDiv = document.getElementById('adminSuccess');
+            
+            // Clear previous messages
+            errorDiv.textContent = '';
+            successDiv.textContent = '';
+            
+            // Validate credentials
+            if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
+                // Success
+                localStorage.setItem('adminLoggedIn', 'true');
+                successDiv.textContent = '✅ Login successful! Redirecting to investor page...';
+                
+                // Redirect after 1.5 seconds
+                setTimeout(() => {
+                    redirectToInvestorPage();
+                }, 1500);
+                
+            } else {
+                // Error
+                errorDiv.textContent = '❌ Invalid email or password. Please try again.';
+                
+                // Clear form
+                document.getElementById('adminEmail').value = '';
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('adminEmail').focus();
+            }
+        });
+
+        // Redirect function
+        function redirectToInvestorPage() {
+            // Check if investor.html exists in the same directory
+            window.location.href = 'Investor.html';
+        }
+
+        // Handle Enter key press on password field
+        document.getElementById('adminPassword').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('adminLoginForm').dispatchEvent(new Event('submit'));
+            }
+        });
+    </script>
+</body>
+</html>

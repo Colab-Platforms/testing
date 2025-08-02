@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Document Sync Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { display: flex; gap: 20px; }
+        .panel { border: 1px solid #ccc; padding: 20px; width: 45%; }
+        button { padding: 10px 15px; margin: 5px; cursor: pointer; }
+        .success { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <h1>📋 Investor Document Sync Test</h1>
+    
+    <div class="container">
+        <div class="panel">
+            <h3>🔧 Admin Panel Test</h3>
+            <p>Test adding documents to localStorage:</p>
+            <button onclick="addTestDocument()">Add Test Document</button>
+            <button onclick="clearAllDocuments()">Clear All Documents</button>
+            <div id="adminStatus"></div>
+        </div>
+        
+        <div class="panel">
+            <h3>👥 Public Page Test</h3>
+            <p>Documents stored in localStorage:</p>
+            <button onclick="showStoredDocuments()">Show Stored Documents</button>
+            <div id="publicStatus"></div>
+        </div>
+    </div>
+
+    <div style="margin-top: 30px;">
+        <h3>📖 Instructions:</h3>
+        <ol>
+            <li><strong>Login to Admin Panel:</strong> Open <a href="investor-admin.html" target="_blank">investor-admin.html</a> and login with admin@empowerindia.com / admin123</li>
+            <li><strong>Add a Document:</strong> Go to any tab and click "✏️ Add Document" to add a test document</li>
+            <li><strong>Check Public Page:</strong> Open <a href="Investor.html" target="_blank">Investor.html</a> and navigate to the same tab to see the document</li>
+            <li><strong>Verify Sync:</strong> The document should appear automatically on the public page</li>
+        </ol>
+    </div>
+
+    <script>
+        function addTestDocument() {
+            const testDoc = {
+                id: Date.now(),
+                title: "Test Document " + new Date().toLocaleTimeString(),
+                date: new Date().toISOString().split('T')[0],
+                description: "This is a test document added via sync test",
+                link: "https://example.com/test.pdf",
+                fileName: "test.pdf",
+                fileSize: 1024000,
+                localFile: false,
+                uploadType: "link",
+                createdAt: new Date().toISOString(),
+                savedAt: new Date().toISOString()
+            };
+
+            let allDocuments = JSON.parse(localStorage.getItem('investorDocuments') || '{}');
+            if (!allDocuments['tab-1']) {
+                allDocuments['tab-1'] = [];
+            }
+            allDocuments['tab-1'].push(testDoc);
+            
+            localStorage.setItem('investorDocuments', JSON.stringify(allDocuments));
+            
+            document.getElementById('adminStatus').innerHTML = 
+                '<p class="success">✅ Test document added to AGM Notices tab!</p>';
+        }
+
+        function clearAllDocuments() {
+            localStorage.removeItem('investorDocuments');
+            document.getElementById('adminStatus').innerHTML = 
+                '<p class="success">🗑️ All documents cleared!</p>';
+            document.getElementById('publicStatus').innerHTML = '';
+        }
+
+        function showStoredDocuments() {
+            const docs = JSON.parse(localStorage.getItem('investorDocuments') || '{}');
+            let html = '<h4>Stored Documents:</h4>';
+            
+            if (Object.keys(docs).length === 0) {
+                html += '<p>No documents found.</p>';
+            } else {
+                Object.keys(docs).forEach(tabId => {
+                    html += `<h5>Tab ${tabId}:</h5><ul>`;
+                    docs[tabId].forEach(doc => {
+                        html += `<li>${doc.title} (${doc.uploadType})</li>`;
+                    });
+                    html += '</ul>';
+                });
+            }
+            
+            document.getElementById('publicStatus').innerHTML = html;
+        }
+
+        // Auto-update display every 2 seconds
+        setInterval(showStoredDocuments, 2000);
+    </script>
+</body>
+</html>

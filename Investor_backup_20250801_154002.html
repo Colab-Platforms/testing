@@ -1,0 +1,1773 @@
+<!DOCTYPE html>
+<html lang="en-US">
+
+<head>
+	<meta charset="UTF-8">
+		<link rel="icon" type="image/png" href="search.png" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
+		<link rel='stylesheet' id='font-awesome-5-all-css'
+		href='font-awesome/css/all.min.css'
+		type='text/css' media='all' />
+	<style id="tb_inline_styles" data-no-optimize="1">
+		.tb_animation_on {
+			overflow-x: hidden
+		}
+
+		.themify_builder .wow {
+			visibility: hidden;
+			animation-fill-mode: both
+		}
+
+		[data-tf-animation] {
+			will-change: transform, opacity, visibility
+		}
+
+		.themify_builder .tf_lax_done {
+			transition-duration: .8s;
+			transition-timing-function: cubic-bezier(.165, .84, .44, 1)
+		}
+
+		[data-sticky-active].tb_sticky_scroll_active {
+			z-index: 1
+		}
+
+		[data-sticky-active].tb_sticky_scroll_active .hide-on-stick {
+			display: none
+		}
+
+		@media(min-width:1281px) {
+			.hide-desktop {
+				width: 0 !important;
+				height: 0 !important;
+				padding: 0 !important;
+				visibility: hidden !important;
+				margin: 0 !important;
+				display: table-column !important;
+				background: 0 !important;
+				content-visibility: hidden;
+				overflow: hidden !important
+			}
+		}
+
+		@media(min-width:769px) and (max-width:1280px) {
+			.hide-tablet_landscape {
+				width: 0 !important;
+				height: 0 !important;
+				padding: 0 !important;
+				visibility: hidden !important;
+				margin: 0 !important;
+				display: table-column !important;
+				background: 0 !important;
+				content-visibility: hidden;
+				overflow: hidden !important
+			}
+		}
+
+		@media(min-width:601px) and (max-width:768px) {
+			.hide-tablet {
+				width: 0 !important;
+				height: 0 !important;
+				padding: 0 !important;
+				visibility: hidden !important;
+				margin: 0 !important;
+				display: table-column !important;
+				background: 0 !important;
+				content-visibility: hidden;
+				overflow: hidden !important
+			}
+		}
+
+		@media(max-width:600px) {
+			.hide-mobile {
+				width: 0 !important;
+				height: 0 !important;
+				padding: 0 !important;
+				visibility: hidden !important;
+				margin: 0 !important;
+				display: table-column !important;
+				background: 0 !important;
+				content-visibility: hidden;
+				overflow: hidden !important
+			}
+		}
+
+		@media(max-width:768px) {
+			div.module-gallery-grid {
+				--galn: var(--galt)
+			}
+		}
+
+		@media(max-width:600px) {
+			.themify_map.tf_map_loaded {
+				width: 100% !important
+			}
+
+			.ui.builder_button,
+			.ui.nav li a {
+				padding: .525em 1.15em
+			}
+
+			.fullheight>.row_inner:not(.tb_col_count_1) {
+				min-height: 0
+			}
+
+			div.module-gallery-grid {
+				--galn: var(--galm);
+				gap: 8px
+			}
+		}
+	</style><noscript>
+		<style>
+			.themify_builder .wow,
+			.wow .tf_lazy {
+				visibility: visible !important
+			}
+		</style>
+	</noscript>
+	<style id="tf_lazy_style" data-no-optimize="1">
+		.tf_svg_lazy {
+			content-visibility: auto;
+			background-size: 100% 25% !important;
+			background-repeat: no-repeat !important;
+			background-position: 0 0, 0 33.4%, 0 66.6%, 0 100% !important;
+			transition: filter .3s linear !important;
+			filter: blur(25px) !important;
+			transform: translateZ(0)
+		}
+
+		.tf_svg_lazy_loaded {
+			filter: blur(0) !important
+		}
+
+		[data-lazy]:is(.module, .module_row:not(.tb_first)),
+		.module[data-lazy] .ui,
+		.module_row[data-lazy]:not(.tb_first):is(>.row_inner, .module_column[data-lazy], .module_subrow[data-lazy]) {
+			background-image: none !important
+		}
+	</style>
+	<noscript>
+		<style>
+			.tf_svg_lazy {
+				display: none !important
+			}
+		</style>
+	</noscript>
+	<style id="tf_lazy_common" data-no-optimize="1">
+		img {
+			max-width: 100%;
+			height: auto
+		}
+
+		:where(.tf_in_flx, .tf_flx) {
+			display: inline-flex;
+			flex-wrap: wrap;
+			place-items: center
+		}
+
+		.tf_fa,
+		:is(em, i) tf-lottie {
+			display: inline-block;
+			vertical-align: middle
+		}
+
+		:is(em, i) tf-lottie {
+			width: 1.5em;
+			height: 1.5em
+		}
+
+		.tf_fa {
+			width: 1em;
+			height: 1em;
+			stroke-width: 0;
+			stroke: currentColor;
+			overflow: visible;
+			fill: currentColor;
+			pointer-events: none;
+			text-rendering: optimizeSpeed;
+			buffered-rendering: static
+		}
+
+		#tf_svg symbol {
+			overflow: visible
+		}
+
+		:where(.tf_lazy) {
+			position: relative;
+			visibility: visible;
+			display: block;
+			opacity: .3
+		}
+
+		.wow .tf_lazy:not(.tf_swiper-slide) {
+			visibility: hidden;
+			opacity: 1
+		}
+
+		div.tf_audio_lazy audio {
+			visibility: hidden;
+			height: 0;
+			display: inline
+		}
+
+		.mejs-container {
+			visibility: visible
+		}
+
+		.tf_iframe_lazy {
+			transition: opacity .3s ease-in-out;
+			min-height: 10px
+		}
+
+		:where(.tf_flx),
+		.tf_swiper-wrapper {
+			display: flex
+		}
+
+		.tf_swiper-slide {
+			flex-shrink: 0;
+			opacity: 0;
+			width: 100%;
+			height: 100%
+		}
+
+		.tf_swiper-wrapper>br,
+		.tf_lazy.tf_swiper-wrapper .tf_lazy:after,
+		.tf_lazy.tf_swiper-wrapper .tf_lazy:before {
+			display: none
+		}
+
+		.tf_lazy:after,
+		.tf_lazy:before {
+			content: '';
+			display: inline-block;
+			position: absolute;
+			width: 10px !important;
+			height: 10px !important;
+			margin: 0 3px;
+			top: 50% !important;
+			inset-inline: auto 50% !important;
+			border-radius: 100%;
+			background-color: currentColor;
+			visibility: visible;
+			animation: tf-hrz-loader infinite .75s cubic-bezier(.2, .68, .18, 1.08)
+		}
+
+		.tf_lazy:after {
+			width: 6px !important;
+			height: 6px !important;
+			inset-inline: 50% auto !important;
+			margin-top: 3px;
+			animation-delay: -.4s
+		}
+
+		@keyframes tf-hrz-loader {
+
+			0%,
+			100% {
+				transform: scale(1);
+				opacity: 1
+			}
+
+			50% {
+				transform: scale(.1);
+				opacity: .6
+			}
+		}
+
+		.tf_lazy_lightbox {
+			position: fixed;
+			background: rgba(11, 11, 11, .8);
+			color: #ccc;
+			top: 0;
+			left: 0;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			z-index: 999
+		}
+
+		.tf_lazy_lightbox .tf_lazy:after,
+		.tf_lazy_lightbox .tf_lazy:before {
+			background: #fff
+		}
+
+		.tf_vd_lazy,
+		tf-lottie {
+			display: flex;
+			flex-wrap: wrap
+		}
+
+		tf-lottie {
+			aspect-ratio: 1.777
+		}
+
+		.tf_w.tf_vd_lazy video {
+			width: 100%;
+			height: auto;
+			position: static;
+			object-fit: cover
+		}
+	</style>
+	<title>Downloads</title>
+	<meta name='robots' content='max-image-preview:large' />
+	<style>
+		img:is([sizes="auto" i], [sizes^="auto," i]) {
+			contain-intrinsic-size: 3000px 1500px
+		}
+	</style>
+	<link rel="alternate" type="application/rss+xml" title="Downloads &raquo; Feed"
+		href="https://empowerindia.in/en-in/feed/" />
+	<link rel="alternate" type="application/rss+xml" title="Downloads &raquo; Comments Feed"
+		href="https://empowerindia.in/en-in/comments/feed/" />
+	<style id='global-styles-inline-css'>
+		:root {
+			--wp--preset--aspect-ratio--square: 1;
+			--wp--preset--aspect-ratio--4-3: 4/3;
+			--wp--preset--aspect-ratio--3-4: 3/4;
+			--wp--preset--aspect-ratio--3-2: 3/2;
+			--wp--preset--aspect-ratio--2-3: 2/3;
+			--wp--preset--aspect-ratio--16-9: 16/9;
+			--wp--preset--aspect-ratio--9-16: 9/16;
+			--wp--preset--color--black: #000000;
+			--wp--preset--color--cyan-bluish-gray: #abb8c3;
+			--wp--preset--color--white: #ffffff;
+			--wp--preset--color--pale-pink: #f78da7;
+			--wp--preset--color--vivid-red: #cf2e2e;
+			--wp--preset--color--luminous-vivid-orange: #ff6900;
+			--wp--preset--color--luminous-vivid-amber: #fcb900;
+			--wp--preset--color--light-green-cyan: #7bdcb5;
+			--wp--preset--color--vivid-green-cyan: #00d084;
+			--wp--preset--color--pale-cyan-blue: #8ed1fc;
+			--wp--preset--color--vivid-cyan-blue: #0693e3;
+			--wp--preset--color--vivid-purple: #9b51e0;
+			--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple: linear-gradient(135deg, rgba(6, 147, 227, 1) 0%, rgb(155, 81, 224) 100%);
+			--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan: linear-gradient(135deg, rgb(122, 220, 180) 0%, rgb(0, 208, 130) 100%);
+			--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange: linear-gradient(135deg, rgba(252, 185, 0, 1) 0%, rgba(255, 105, 0, 1) 100%);
+			--wp--preset--gradient--luminous-vivid-orange-to-vivid-red: linear-gradient(135deg, rgba(255, 105, 0, 1) 0%, rgb(207, 46, 46) 100%);
+			--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray: linear-gradient(135deg, rgb(238, 238, 238) 0%, rgb(169, 184, 195) 100%);
+			--wp--preset--gradient--cool-to-warm-spectrum: linear-gradient(135deg, rgb(74, 234, 220) 0%, rgb(151, 120, 209) 20%, rgb(207, 42, 186) 40%, rgb(238, 44, 130) 60%, rgb(251, 105, 98) 80%, rgb(254, 248, 76) 100%);
+			--wp--preset--gradient--blush-light-purple: linear-gradient(135deg, rgb(255, 206, 236) 0%, rgb(152, 150, 240) 100%);
+			--wp--preset--gradient--blush-bordeaux: linear-gradient(135deg, rgb(254, 205, 165) 0%, rgb(254, 45, 45) 50%, rgb(107, 0, 62) 100%);
+			--wp--preset--gradient--luminous-dusk: linear-gradient(135deg, rgb(255, 203, 112) 0%, rgb(199, 81, 192) 50%, rgb(65, 88, 208) 100%);
+			--wp--preset--gradient--pale-ocean: linear-gradient(135deg, rgb(255, 245, 203) 0%, rgb(182, 227, 212) 50%, rgb(51, 167, 181) 100%);
+			--wp--preset--gradient--electric-grass: linear-gradient(135deg, rgb(202, 248, 128) 0%, rgb(113, 206, 126) 100%);
+			--wp--preset--gradient--midnight: linear-gradient(135deg, rgb(2, 3, 129) 0%, rgb(40, 116, 252) 100%);
+			--wp--preset--font-size--small: 13px;
+			--wp--preset--font-size--medium: 20px;
+			--wp--preset--font-size--large: 36px;
+			--wp--preset--font-size--x-large: 42px;
+			--wp--preset--spacing--20: 0.44rem;
+			--wp--preset--spacing--30: 0.67rem;
+			--wp--preset--spacing--40: 1rem;
+			--wp--preset--spacing--50: 1.5rem;
+			--wp--preset--spacing--60: 2.25rem;
+			--wp--preset--spacing--70: 3.38rem;
+			--wp--preset--spacing--80: 5.06rem;
+			--wp--preset--shadow--natural: 6px 6px 9px rgba(0, 0, 0, 0.2);
+			--wp--preset--shadow--deep: 12px 12px 50px rgba(0, 0, 0, 0.4);
+			--wp--preset--shadow--sharp: 6px 6px 0px rgba(0, 0, 0, 0.2);
+			--wp--preset--shadow--outlined: 6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1);
+			--wp--preset--shadow--crisp: 6px 6px 0px rgba(0, 0, 0, 1);
+		}
+
+		:where(body) {
+			margin: 0;
+		}
+
+		.wp-site-blocks>.alignleft {
+			float: left;
+			margin-right: 2em;
+		}
+
+		.wp-site-blocks>.alignright {
+			float: right;
+			margin-left: 2em;
+		}
+
+		.wp-site-blocks>.aligncenter {
+			justify-content: center;
+			margin-left: auto;
+			margin-right: auto;
+		}
+
+		:where(.wp-site-blocks)>* {
+			margin-block-start: 24px;
+			margin-block-end: 0;
+		}
+
+		:where(.wp-site-blocks)> :first-child {
+			margin-block-start: 0;
+		}
+
+		:where(.wp-site-blocks)> :last-child {
+			margin-block-end: 0;
+		}
+
+		:root {
+			--wp--style--block-gap: 24px;
+		}
+
+		:root :where(.is-layout-flow)> :first-child {
+			margin-block-start: 0;
+		}
+
+		:root :where(.is-layout-flow)> :last-child {
+			margin-block-end: 0;
+		}
+
+		:root :where(.is-layout-flow)>* {
+			margin-block-start: 24px;
+			margin-block-end: 0;
+		}
+
+		:root :where(.is-layout-constrained)> :first-child {
+			margin-block-start: 0;
+		}
+
+		:root :where(.is-layout-constrained)> :last-child {
+			margin-block-end: 0;
+		}
+
+		:root :where(.is-layout-constrained)>* {
+			margin-block-start: 24px;
+			margin-block-end: 0;
+		}
+
+		:root :where(.is-layout-flex) {
+			gap: 24px;
+		}
+
+		:root :where(.is-layout-grid) {
+			gap: 24px;
+		}
+
+		.is-layout-flow>.alignleft {
+			float: left;
+			margin-inline-start: 0;
+			margin-inline-end: 2em;
+		}
+
+		.is-layout-flow>.alignright {
+			float: right;
+			margin-inline-start: 2em;
+			margin-inline-end: 0;
+		}
+
+		.is-layout-flow>.aligncenter {
+			margin-left: auto !important;
+			margin-right: auto !important;
+		}
+
+		.is-layout-constrained>.alignleft {
+			float: left;
+			margin-inline-start: 0;
+			margin-inline-end: 2em;
+		}
+
+		.is-layout-constrained>.alignright {
+			float: right;
+			margin-inline-start: 2em;
+			margin-inline-end: 0;
+		}
+
+		.is-layout-constrained>.aligncenter {
+			margin-left: auto !important;
+			margin-right: auto !important;
+		}
+
+		.is-layout-constrained> :where(:not(.alignleft):not(.alignright):not(.alignfull)) {
+			margin-left: auto !important;
+			margin-right: auto !important;
+		}
+
+		body .is-layout-flex {
+			display: flex;
+		}
+
+		.is-layout-flex {
+			flex-wrap: wrap;
+			align-items: center;
+		}
+
+		.is-layout-flex> :is(*, div) {
+			margin: 0;
+		}
+
+		body .is-layout-grid {
+			display: grid;
+		}
+
+		.is-layout-grid> :is(*, div) {
+			margin: 0;
+		}
+
+		body {
+			padding-top: 0px;
+			padding-right: 0px;
+			padding-bottom: 0px;
+			padding-left: 0px;
+		}
+
+		a:where(:not(.wp-element-button)) {
+			text-decoration: underline;
+		}
+
+		:root :where(.wp-element-button, .wp-block-button__link) {
+			background-color: #32373c;
+			border-width: 0;
+			color: #fff;
+			font-family: inherit;
+			font-size: inherit;
+			line-height: inherit;
+			padding: calc(0.667em + 2px) calc(1.333em + 2px);
+			text-decoration: none;
+		}
+
+		.has-black-color {
+			color: var(--wp--preset--color--black) !important;
+		}
+
+		.has-cyan-bluish-gray-color {
+			color: var(--wp--preset--color--cyan-bluish-gray) !important;
+		}
+
+		.has-white-color {
+			color: var(--wp--preset--color--white) !important;
+		}
+
+		.has-pale-pink-color {
+			color: var(--wp--preset--color--pale-pink) !important;
+		}
+
+		.has-vivid-red-color {
+			color: var(--wp--preset--color--vivid-red) !important;
+		}
+
+		.has-luminous-vivid-orange-color {
+			color: var(--wp--preset--color--luminous-vivid-orange) !important;
+		}
+
+		.has-luminous-vivid-amber-color {
+			color: var(--wp--preset--color--luminous-vivid-amber) !important;
+		}
+
+		.has-light-green-cyan-color {
+			color: var(--wp--preset--color--light-green-cyan) !important;
+		}
+
+		.has-vivid-green-cyan-color {
+			color: var(--wp--preset--color--vivid-green-cyan) !important;
+		}
+
+		.has-pale-cyan-blue-color {
+			color: var(--wp--preset--color--pale-cyan-blue) !important;
+		}
+
+		.has-vivid-cyan-blue-color {
+			color: var(--wp--preset--color--vivid-cyan-blue) !important;
+		}
+
+		.has-vivid-purple-color {
+			color: var(--wp--preset--color--vivid-purple) !important;
+		}
+
+		.has-black-background-color {
+			background-color: var(--wp--preset--color--black) !important;
+		}
+
+		.has-cyan-bluish-gray-background-color {
+			background-color: var(--wp--preset--color--cyan-bluish-gray) !important;
+		}
+
+		.has-white-background-color {
+			background-color: var(--wp--preset--color--white) !important;
+		}
+
+		.has-pale-pink-background-color {
+			background-color: var(--wp--preset--color--pale-pink) !important;
+		}
+
+		.has-vivid-red-background-color {
+			background-color: var(--wp--preset--color--vivid-red) !important;
+		}
+
+		.has-luminous-vivid-orange-background-color {
+			background-color: var(--wp--preset--color--luminous-vivid-orange) !important;
+		}
+
+		.has-luminous-vivid-amber-background-color {
+			background-color: var(--wp--preset--color--luminous-vivid-amber) !important;
+		}
+
+		.has-light-green-cyan-background-color {
+			background-color: var(--wp--preset--color--light-green-cyan) !important;
+		}
+
+		.has-vivid-green-cyan-background-color {
+			background-color: var(--wp--preset--color--vivid-green-cyan) !important;
+		}
+
+		.has-pale-cyan-blue-background-color {
+			background-color: var(--wp--preset--color--pale-cyan-blue) !important;
+		}
+
+		.has-vivid-cyan-blue-background-color {
+			background-color: var(--wp--preset--color--vivid-cyan-blue) !important;
+		}
+
+		.has-vivid-purple-background-color {
+			background-color: var(--wp--preset--color--vivid-purple) !important;
+		}
+
+		.has-black-border-color {
+			border-color: var(--wp--preset--color--black) !important;
+		}
+
+		.has-cyan-bluish-gray-border-color {
+			border-color: var(--wp--preset--color--cyan-bluish-gray) !important;
+		}
+
+		.has-white-border-color {
+			border-color: var(--wp--preset--color--white) !important;
+		}
+
+		.has-pale-pink-border-color {
+			border-color: var(--wp--preset--color--pale-pink) !important;
+		}
+
+		.has-vivid-red-border-color {
+			border-color: var(--wp--preset--color--vivid-red) !important;
+		}
+
+		.has-luminous-vivid-orange-border-color {
+			border-color: var(--wp--preset--color--luminous-vivid-orange) !important;
+		}
+
+		.has-luminous-vivid-amber-border-color {
+			border-color: var(--wp--preset--color--luminous-vivid-amber) !important;
+		}
+
+		.has-light-green-cyan-border-color {
+			border-color: var(--wp--preset--color--light-green-cyan) !important;
+		}
+
+		.has-vivid-green-cyan-border-color {
+			border-color: var(--wp--preset--color--vivid-green-cyan) !important;
+		}
+
+		.has-pale-cyan-blue-border-color {
+			border-color: var(--wp--preset--color--pale-cyan-blue) !important;
+		}
+
+		.has-vivid-cyan-blue-border-color {
+			border-color: var(--wp--preset--color--vivid-cyan-blue) !important;
+		}
+
+		.has-vivid-purple-border-color {
+			border-color: var(--wp--preset--color--vivid-purple) !important;
+		}
+
+		.has-vivid-cyan-blue-to-vivid-purple-gradient-background {
+			background: var(--wp--preset--gradient--vivid-cyan-blue-to-vivid-purple) !important;
+		}
+
+		.has-light-green-cyan-to-vivid-green-cyan-gradient-background {
+			background: var(--wp--preset--gradient--light-green-cyan-to-vivid-green-cyan) !important;
+		}
+
+		.has-luminous-vivid-amber-to-luminous-vivid-orange-gradient-background {
+			background: var(--wp--preset--gradient--luminous-vivid-amber-to-luminous-vivid-orange) !important;
+		}
+
+		.has-luminous-vivid-orange-to-vivid-red-gradient-background {
+			background: var(--wp--preset--gradient--luminous-vivid-orange-to-vivid-red) !important;
+		}
+
+		.has-very-light-gray-to-cyan-bluish-gray-gradient-background {
+			background: var(--wp--preset--gradient--very-light-gray-to-cyan-bluish-gray) !important;
+		}
+
+		.has-cool-to-warm-spectrum-gradient-background {
+			background: var(--wp--preset--gradient--cool-to-warm-spectrum) !important;
+		}
+
+		.has-blush-light-purple-gradient-background {
+			background: var(--wp--preset--gradient--blush-light-purple) !important;
+		}
+
+		.has-blush-bordeaux-gradient-background {
+			background: var(--wp--preset--gradient--blush-bordeaux) !important;
+		}
+
+		.has-luminous-dusk-gradient-background {
+			background: var(--wp--preset--gradient--luminous-dusk) !important;
+		}
+
+		.has-pale-ocean-gradient-background {
+			background: var(--wp--preset--gradient--pale-ocean) !important;
+		}
+
+		.has-electric-grass-gradient-background {
+			background: var(--wp--preset--gradient--electric-grass) !important;
+		}
+
+		.has-midnight-gradient-background {
+			background: var(--wp--preset--gradient--midnight) !important;
+		}
+
+		.has-small-font-size {
+			font-size: var(--wp--preset--font-size--small) !important;
+		}
+
+		.has-medium-font-size {
+			font-size: var(--wp--preset--font-size--medium) !important;
+		}
+
+		.has-large-font-size {
+			font-size: var(--wp--preset--font-size--large) !important;
+		}
+
+		.has-x-large-font-size {
+			font-size: var(--wp--preset--font-size--x-large) !important;
+		}
+
+		:root :where(.wp-block-pullquote) {
+			font-size: 1.5em;
+			line-height: 1.6;
+		}
+	</style>
+	<script src="https://empowerindia.in/en-in/wp-includes/js/jquery/jquery.min.js?ver=3.7.1"
+		id="jquery-core-js"></script>
+	<link rel="https://api.w.org/" href="https://empowerindia.in/en-in/wp-json/" />
+	<link rel="alternate" title="JSON" type="application/json"
+		href="https://empowerindia.in/en-in/wp-json/wp/v2/pages/9" />
+	<link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://empowerindia.in/en-in/xmlrpc.php?rsd" />
+	<meta name="generator" content="WordPress 6.8.2" />
+	<link rel="canonical" href="https://empowerindia.in/en-in/" />
+	<link rel='shortlink' href='https://empowerindia.in/en-in/' />
+	<link rel="alternate" title="oEmbed (JSON)" type="application/json+oembed"
+		href="https://empowerindia.in/en-in/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fempowerindia.in%2Fen-in%2F" />
+	<link rel="alternate" title="oEmbed (XML)" type="text/xml+oembed"
+		href="https://empowerindia.in/en-in/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fempowerindia.in%2Fen-in%2F&#038;format=xml" />
+
+	<style>
+		@keyframes themifyAnimatedBG {
+			0% {
+				background-color: #33baab
+			}
+
+			100% {
+				background-color: #e33b9e
+			}
+
+			50% {
+				background-color: #4961d7
+			}
+
+			33.3% {
+				background-color: #2ea85c
+			}
+
+			25% {
+				background-color: #2bb8ed
+			}
+
+			20% {
+				background-color: #dd5135
+			}
+		}
+
+		.module_row.animated-bg {
+			animation: themifyAnimatedBG 30000ms infinite alternate
+		}
+	</style>
+	<style>
+		.recentcomments a {
+			display: inline !important;
+			padding: 0 !important;
+			margin: 0 !important;
+		}
+	</style>
+	<link href="https://empowerindia.in/assets/plugins/bootstrap/css/bootstrap.min.css" rel="stylesheet"
+		type="text/css" />
+	<link href="https://empowerindia.in/assets/plugins/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+		type="text/css" />
+	<link href="https://empowerindia.in/assets/plugins/et-line/et-line.css" rel="stylesheet" type="text/css" />
+	<link href="https://empowerindia.in/assets/plugins/scrollbar/jquery.mCustomScrollbar.css" rel="stylesheet"
+		type="text/css" />
+	<link href="https://empowerindia.in/assets/plugins/magnific-popup/magnific-popup.css" rel="stylesheet"
+		type="text/css" />
+	<link href="https://empowerindia.in/assets/css/global.css" rel="stylesheet" type="text/css" />
+	<link href="https://empowerindia.in/assets/css/theme/dark.css" rel="stylesheet" type="text/css" />
+	<link href="https://empowerindia.in/assets/css/theme/base.css" id="style-color" rel="stylesheet" type="text/css" />
+	<script type="text/javascript" src="https://empowerindia.in/assets/plugins/jquery.min.js"></script>
+	<!-- Entry Style -->
+	<style>
+		.skin-styles {
+			background-color: rgba(255, 255, 255, 1)
+		}
+	</style>
+	<!-- End Entry Style -->
+	<link rel="icon" href="https://empowerindia.in/en-in/wp-content/uploads/2024/04/cropped-Empower-logo-32x32.jpeg"
+		sizes="32x32" />
+	<link rel="icon" href="https://empowerindia.in/en-in/wp-content/uploads/2024/04/cropped-Empower-logo-192x192.jpeg"
+		sizes="192x192" />
+	<link rel="apple-touch-icon"
+		href="https://empowerindia.in/en-in/wp-content/uploads/2024/04/cropped-Empower-logo-180x180.jpeg" />
+	<meta name="msapplication-TileImage"
+		content="https://empowerindia.in/en-in/wp-content/uploads/2024/04/cropped-Empower-logo-270x270.jpeg" />
+	<link rel="prefetch"
+		href="https://empowerindia.in/en-in/wp-content/themes/themify-ultra/js/themify-script.js?ver=7.6.3" as="script"
+		fetchpriority="low">
+	<link rel="prefetch"
+		href="https://empowerindia.in/en-in/wp-content/themes/themify-ultra/themify/js/modules/themify-sidemenu.js?ver=7.6.9"
+		as="script" fetchpriority="low">
+	<link rel="preload" href="https://empowerindia.in/en-in/wp-content/uploads/2024/04/Empower-logo.jpeg" as="image">
+	<link rel="preload"
+		href="https://empowerindia.in/en-in/wp-content/themes/themify-ultra/themify/themify-builder/js/themify-builder-script.js?ver=7.6.9"
+		as="script" fetchpriority="low">
+	<link rel="prefetch"
+		href="https://empowerindia.in/en-in/wp-content/themes/themify-ultra/themify/themify-builder/js/modules/tab.js?ver=7.6.9"
+		as="script" fetchpriority="low">
+	<link rel="prefetch"
+		href="https://empowerindia.in/en-in/wp-content/themes/themify-ultra/themify/css/modules/animate.min.css?ver=7.6.9"
+		as="style">
+	<link rel="prefetch"
+		href="https://empowerindia.in/en-in/wp-content/themes/themify-ultra/themify/js/modules/animate.js?ver=7.6.9"
+		as="script" fetchpriority="low">
+	<style id="tf_gf_fonts_style">
+		@font-face {
+			font-family: 'Public Sans';
+			font-style: italic;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/publicsans/v18/ijwTs572Xtc6ZYQws9YVwnNDTJPax9k0.woff2) format('woff2');
+			unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+		}
+
+		@font-face {
+			font-family: 'Public Sans';
+			font-style: italic;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/publicsans/v18/ijwTs572Xtc6ZYQws9YVwnNDTJLax9k0.woff2) format('woff2');
+			unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+		}
+
+		@font-face {
+			font-family: 'Public Sans';
+			font-style: italic;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/publicsans/v18/ijwTs572Xtc6ZYQws9YVwnNDTJzaxw.woff2) format('woff2');
+			unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+		}
+
+		@font-face {
+			font-family: 'Public Sans';
+			font-style: italic;
+			font-weight: 600;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/publicsans/v18/ijwTs572Xtc6ZYQws9YVwnNDTJPax9k0.woff2) format('woff2');
+			unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+		}
+
+		@font-face {
+			font-family: 'Public Sans';
+			font-style: italic;
+			font-weight: 600;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/publicsans/v18/ijwTs572Xtc6ZYQws9YVwnNDTJLax9k0.woff2) format('woff2');
+			unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+		}
+
+		@font-face {
+			font-family: 'Public Sans';
+			font-style: italic;
+			font-weight: 600;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/publicsans/v18/ijwTs572Xtc6ZYQws9YVwnNDTJzaxw.woff2) format('woff2');
+			unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+		}
+
+		@font-face {
+			font-family: 'Public Sans';
+			font-style: italic;
+			font-weight: 700;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/publicsans/v18/ijwTs572Xtc6ZYQws9YVwnNDTJPax9k0.woff2) format('woff2');
+			unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+		}
+
+		@font-face {
+			font-family: 'Public Sans';
+			font-style: italic;
+			font-weight: 700;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/publicsans/v18/ijwTs572Xtc6ZYQws9YVwnNDTJLax9k0.woff2) format('woff2');
+			unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+		}
+
+		@font-face {
+			font-family: 'Public Sans';
+			font-style: italic;
+			font-weight: 700;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/publicsans/v18/ijwTs572Xtc6ZYQws9YVwnNDTJzaxw.woff2) format('woff2');
+			unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+		}
+
+		@font-face {
+			font-family: 'Public Sans';
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/publicsans/v18/ijwRs572Xtc6ZYQws9YVwnNJfJ7Cww.woff2) format('woff2');
+			unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+		}
+
+		@font-face {
+			font-family: 'Public Sans';
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/publicsans/v18/ijwRs572Xtc6ZYQws9YVwnNIfJ7Cww.woff2) format('woff2');
+			unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+		}
+
+		@font-face {
+			font-family: 'Public Sans';
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/publicsans/v18/ijwRs572Xtc6ZYQws9YVwnNGfJ4.woff2) format('woff2');
+			unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+		}
+
+		@font-face {
+			font-family: 'Public Sans';
+			font-weight: 600;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/publicsans/v18/ijwRs572Xtc6ZYQws9YVwnNJfJ7Cww.woff2) format('woff2');
+			unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+		}
+
+		@font-face {
+			font-family: 'Public Sans';
+			font-weight: 600;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/publicsans/v18/ijwRs572Xtc6ZYQws9YVwnNIfJ7Cww.woff2) format('woff2');
+			unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+		}
+
+		@font-face {
+			font-family: 'Public Sans';
+			font-weight: 600;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/publicsans/v18/ijwRs572Xtc6ZYQws9YVwnNGfJ4.woff2) format('woff2');
+			unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+		}
+
+		@font-face {
+			font-family: 'Public Sans';
+			font-weight: 700;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/publicsans/v18/ijwRs572Xtc6ZYQws9YVwnNJfJ7Cww.woff2) format('woff2');
+			unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+		}
+
+		@font-face {
+			font-family: 'Public Sans';
+			font-weight: 700;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/publicsans/v18/ijwRs572Xtc6ZYQws9YVwnNIfJ7Cww.woff2) format('woff2');
+			unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+		}
+
+		@font-face {
+			font-family: 'Public Sans';
+			font-weight: 700;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/publicsans/v18/ijwRs572Xtc6ZYQws9YVwnNGfJ4.woff2) format('woff2');
+			unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+		}
+
+		@font-face {
+			font-family: 'Roboto';
+			font-style: italic;
+			font-stretch: 100%;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/roboto/v47/KFOKCnqEu92Fr1Mu53ZEC9_Vu3r1gIhOszmOClHrs6ljXfMMLoHQuAX-k2Qn.woff2) format('woff2');
+			unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+		}
+
+		@font-face {
+			font-family: 'Roboto';
+			font-style: italic;
+			font-stretch: 100%;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/roboto/v47/KFOKCnqEu92Fr1Mu53ZEC9_Vu3r1gIhOszmOClHrs6ljXfMMLoHQuAz-k2Qn.woff2) format('woff2');
+			unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+		}
+
+		@font-face {
+			font-family: 'Roboto';
+			font-style: italic;
+			font-stretch: 100%;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/roboto/v47/KFOKCnqEu92Fr1Mu53ZEC9_Vu3r1gIhOszmOClHrs6ljXfMMLoHQuAT-k2Qn.woff2) format('woff2');
+			unicode-range: U+1F00-1FFF;
+		}
+
+		@font-face {
+			font-family: 'Roboto';
+			font-style: italic;
+			font-stretch: 100%;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/roboto/v47/KFOKCnqEu92Fr1Mu53ZEC9_Vu3r1gIhOszmOClHrs6ljXfMMLoHQuAv-k2Qn.woff2) format('woff2');
+			unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+		}
+
+		@font-face {
+			font-family: 'Roboto';
+			font-style: italic;
+			font-stretch: 100%;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/roboto/v47/KFOKCnqEu92Fr1Mu53ZEC9_Vu3r1gIhOszmOClHrs6ljXfMMLoHQuHT-k2Qn.woff2) format('woff2');
+			unicode-range: U+0302-0303, U+0305, U+0307-0308, U+0310, U+0312, U+0315, U+031A, U+0326-0327, U+032C, U+032F-0330, U+0332-0333, U+0338, U+033A, U+0346, U+034D, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+03D1, U+03D5-03D6, U+03F0-03F1, U+03F4-03F5, U+2016-2017, U+2034-2038, U+203C, U+2040, U+2043, U+2047, U+2050, U+2057, U+205F, U+2070-2071, U+2074-208E, U+2090-209C, U+20D0-20DC, U+20E1, U+20E5-20EF, U+2100-2112, U+2114-2115, U+2117-2121, U+2123-214F, U+2190, U+2192, U+2194-21AE, U+21B0-21E5, U+21F1-21F2, U+21F4-2211, U+2213-2214, U+2216-22FF, U+2308-230B, U+2310, U+2319, U+231C-2321, U+2336-237A, U+237C, U+2395, U+239B-23B7, U+23D0, U+23DC-23E1, U+2474-2475, U+25AF, U+25B3, U+25B7, U+25BD, U+25C1, U+25CA, U+25CC, U+25FB, U+266D-266F, U+27C0-27FF, U+2900-2AFF, U+2B0E-2B11, U+2B30-2B4C, U+2BFE, U+3030, U+FF5B, U+FF5D, U+1D400-1D7FF, U+1EE00-1EEFF;
+		}
+
+		@font-face {
+			font-family: 'Roboto';
+			font-style: italic;
+			font-stretch: 100%;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/roboto/v47/KFOKCnqEu92Fr1Mu53ZEC9_Vu3r1gIhOszmOClHrs6ljXfMMLoHQuGb-k2Qn.woff2) format('woff2');
+			unicode-range: U+0001-000C, U+000E-001F, U+007F-009F, U+20DD-20E0, U+20E2-20E4, U+2150-218F, U+2190, U+2192, U+2194-2199, U+21AF, U+21E6-21F0, U+21F3, U+2218-2219, U+2299, U+22C4-22C6, U+2300-243F, U+2440-244A, U+2460-24FF, U+25A0-27BF, U+2800-28FF, U+2921-2922, U+2981, U+29BF, U+29EB, U+2B00-2BFF, U+4DC0-4DFF, U+FFF9-FFFB, U+10140-1018E, U+10190-1019C, U+101A0, U+101D0-101FD, U+102E0-102FB, U+10E60-10E7E, U+1D2C0-1D2D3, U+1D2E0-1D37F, U+1F000-1F0FF, U+1F100-1F1AD, U+1F1E6-1F1FF, U+1F30D-1F30F, U+1F315, U+1F31C, U+1F31E, U+1F320-1F32C, U+1F336, U+1F378, U+1F37D, U+1F382, U+1F393-1F39F, U+1F3A7-1F3A8, U+1F3AC-1F3AF, U+1F3C2, U+1F3C4-1F3C6, U+1F3CA-1F3CE, U+1F3D4-1F3E0, U+1F3ED, U+1F3F1-1F3F3, U+1F3F5-1F3F7, U+1F408, U+1F415, U+1F41F, U+1F426, U+1F43F, U+1F441-1F442, U+1F444, U+1F446-1F449, U+1F44C-1F44E, U+1F453, U+1F46A, U+1F47D, U+1F4A3, U+1F4B0, U+1F4B3, U+1F4B9, U+1F4BB, U+1F4BF, U+1F4C8-1F4CB, U+1F4D6, U+1F4DA, U+1F4DF, U+1F4E3-1F4E6, U+1F4EA-1F4ED, U+1F4F7, U+1F4F9-1F4FB, U+1F4FD-1F4FE, U+1F503, U+1F507-1F50B, U+1F50D, U+1F512-1F513, U+1F53E-1F54A, U+1F54F-1F5FA, U+1F610, U+1F650-1F67F, U+1F687, U+1F68D, U+1F691, U+1F694, U+1F698, U+1F6AD, U+1F6B2, U+1F6B9-1F6BA, U+1F6BC, U+1F6C6-1F6CF, U+1F6D3-1F6D7, U+1F6E0-1F6EA, U+1F6F0-1F6F3, U+1F6F7-1F6FC, U+1F700-1F7FF, U+1F800-1F80B, U+1F810-1F847, U+1F850-1F859, U+1F860-1F887, U+1F890-1F8AD, U+1F8B0-1F8BB, U+1F8C0-1F8C1, U+1F900-1F90B, U+1F93B, U+1F946, U+1F984, U+1F996, U+1F9E9, U+1FA00-1FA6F, U+1FA70-1FA7C, U+1FA80-1FA89, U+1FA8F-1FAC6, U+1FACE-1FADC, U+1FADF-1FAE9, U+1FAF0-1FAF8, U+1FB00-1FBFF;
+		}
+
+		@font-face {
+			font-family: 'Roboto';
+			font-style: italic;
+			font-stretch: 100%;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/roboto/v47/KFOKCnqEu92Fr1Mu53ZEC9_Vu3r1gIhOszmOClHrs6ljXfMMLoHQuAf-k2Qn.woff2) format('woff2');
+			unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+		}
+
+		@font-face {
+			font-family: 'Roboto';
+			font-style: italic;
+			font-stretch: 100%;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/roboto/v47/KFOKCnqEu92Fr1Mu53ZEC9_Vu3r1gIhOszmOClHrs6ljXfMMLoHQuAb-k2Qn.woff2) format('woff2');
+			unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+		}
+
+		@font-face {
+			font-family: 'Roboto';
+			font-style: italic;
+			font-stretch: 100%;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/roboto/v47/KFOKCnqEu92Fr1Mu53ZEC9_Vu3r1gIhOszmOClHrs6ljXfMMLoHQuAj-kw.woff2) format('woff2');
+			unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+		}
+
+		@font-face {
+			font-family: 'Roboto';
+			font-stretch: 100%;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/roboto/v47/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWubEbVmZiArmlw.woff2) format('woff2');
+			unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+		}
+
+		@font-face {
+			font-family: 'Roboto';
+			font-stretch: 100%;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/roboto/v47/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWubEbVmQiArmlw.woff2) format('woff2');
+			unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+		}
+
+		@font-face {
+			font-family: 'Roboto';
+			font-stretch: 100%;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/roboto/v47/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWubEbVmYiArmlw.woff2) format('woff2');
+			unicode-range: U+1F00-1FFF;
+		}
+
+		@font-face {
+			font-family: 'Roboto';
+			font-stretch: 100%;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/roboto/v47/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWubEbVmXiArmlw.woff2) format('woff2');
+			unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+		}
+
+		@font-face {
+			font-family: 'Roboto';
+			font-stretch: 100%;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/roboto/v47/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWubEbVnoiArmlw.woff2) format('woff2');
+			unicode-range: U+0302-0303, U+0305, U+0307-0308, U+0310, U+0312, U+0315, U+031A, U+0326-0327, U+032C, U+032F-0330, U+0332-0333, U+0338, U+033A, U+0346, U+034D, U+0391-03A1, U+03A3-03A9, U+03B1-03C9, U+03D1, U+03D5-03D6, U+03F0-03F1, U+03F4-03F5, U+2016-2017, U+2034-2038, U+203C, U+2040, U+2043, U+2047, U+2050, U+2057, U+205F, U+2070-2071, U+2074-208E, U+2090-209C, U+20D0-20DC, U+20E1, U+20E5-20EF, U+2100-2112, U+2114-2115, U+2117-2121, U+2123-214F, U+2190, U+2192, U+2194-21AE, U+21B0-21E5, U+21F1-21F2, U+21F4-2211, U+2213-2214, U+2216-22FF, U+2308-230B, U+2310, U+2319, U+231C-2321, U+2336-237A, U+237C, U+2395, U+239B-23B7, U+23D0, U+23DC-23E1, U+2474-2475, U+25AF, U+25B3, U+25B7, U+25BD, U+25C1, U+25CA, U+25CC, U+25FB, U+266D-266F, U+27C0-27FF, U+2900-2AFF, U+2B0E-2B11, U+2B30-2B4C, U+2BFE, U+3030, U+FF5B, U+FF5D, U+1D400-1D7FF, U+1EE00-1EEFF;
+		}
+
+		@font-face {
+			font-family: 'Roboto';
+			font-stretch: 100%;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/roboto/v47/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWubEbVn6iArmlw.woff2) format('woff2');
+			unicode-range: U+0001-000C, U+000E-001F, U+007F-009F, U+20DD-20E0, U+20E2-20E4, U+2150-218F, U+2190, U+2192, U+2194-2199, U+21AF, U+21E6-21F0, U+21F3, U+2218-2219, U+2299, U+22C4-22C6, U+2300-243F, U+2440-244A, U+2460-24FF, U+25A0-27BF, U+2800-28FF, U+2921-2922, U+2981, U+29BF, U+29EB, U+2B00-2BFF, U+4DC0-4DFF, U+FFF9-FFFB, U+10140-1018E, U+10190-1019C, U+101A0, U+101D0-101FD, U+102E0-102FB, U+10E60-10E7E, U+1D2C0-1D2D3, U+1D2E0-1D37F, U+1F000-1F0FF, U+1F100-1F1AD, U+1F1E6-1F1FF, U+1F30D-1F30F, U+1F315, U+1F31C, U+1F31E, U+1F320-1F32C, U+1F336, U+1F378, U+1F37D, U+1F382, U+1F393-1F39F, U+1F3A7-1F3A8, U+1F3AC-1F3AF, U+1F3C2, U+1F3C4-1F3C6, U+1F3CA-1F3CE, U+1F3D4-1F3E0, U+1F3ED, U+1F3F1-1F3F3, U+1F3F5-1F3F7, U+1F408, U+1F415, U+1F41F, U+1F426, U+1F43F, U+1F441-1F442, U+1F444, U+1F446-1F449, U+1F44C-1F44E, U+1F453, U+1F46A, U+1F47D, U+1F4A3, U+1F4B0, U+1F4B3, U+1F4B9, U+1F4BB, U+1F4BF, U+1F4C8-1F4CB, U+1F4D6, U+1F4DA, U+1F4DF, U+1F4E3-1F4E6, U+1F4EA-1F4ED, U+1F4F7, U+1F4F9-1F4FB, U+1F4FD-1F4FE, U+1F503, U+1F507-1F50B, U+1F50D, U+1F512-1F513, U+1F53E-1F54A, U+1F54F-1F5FA, U+1F610, U+1F650-1F67F, U+1F687, U+1F68D, U+1F691, U+1F694, U+1F698, U+1F6AD, U+1F6B2, U+1F6B9-1F6BA, U+1F6BC, U+1F6C6-1F6CF, U+1F6D3-1F6D7, U+1F6E0-1F6EA, U+1F6F0-1F6F3, U+1F6F7-1F6FC, U+1F700-1F7FF, U+1F800-1F80B, U+1F810-1F847, U+1F850-1F859, U+1F860-1F887, U+1F890-1F8AD, U+1F8B0-1F8BB, U+1F8C0-1F8C1, U+1F900-1F90B, U+1F93B, U+1F946, U+1F984, U+1F996, U+1F9E9, U+1FA00-1FA6F, U+1FA70-1FA7C, U+1FA80-1FA89, U+1FA8F-1FAC6, U+1FACE-1FADC, U+1FADF-1FAE9, U+1FAF0-1FAF8, U+1FB00-1FBFF;
+		}
+
+		@font-face {
+			font-family: 'Roboto';
+			font-stretch: 100%;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/roboto/v47/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWubEbVmbiArmlw.woff2) format('woff2');
+			unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+		}
+
+		@font-face {
+			font-family: 'Roboto';
+			font-stretch: 100%;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/roboto/v47/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWubEbVmaiArmlw.woff2) format('woff2');
+			unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+		}
+
+		@font-face {
+			font-family: 'Roboto';
+			font-stretch: 100%;
+			font-display: swap;
+			src: url(https://fonts.gstatic.com/s/roboto/v47/KFOMCnqEu92Fr1ME7kSn66aGLdTylUAMQXC89YmC2DPNWubEbVmUiAo.woff2) format('woff2');
+			unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+		}
+	</style>
+	<link rel="preload" fetchpriority="high"
+		href="https://empowerindia.in/en-in/wp-content/uploads/themify-concate/3020568842/themify-3129818960.css"
+		as="style">
+	<link fetchpriority="high" id="themify_concate-css" rel="stylesheet"
+		href="https://empowerindia.in/en-in/wp-content/uploads/themify-concate/3020568842/themify-3129818960.css">
+</head>
+
+<body
+	class="home wp-singular page-template-default page page-id-9 wp-theme-themify-ultra skin-default sidebar-none full_width tb_animation_on ready-view header-horizontal fixed-header-enabled transparent-header footer-none search-off footer-off skin-styles sidemenu-active">
+	<a class="screen-reader-text skip-to-content" href="#content">Skip to content</a><svg id="tf_svg"
+		style="display:none">
+		<defs></defs>
+	</svg>
+	<script> </script>
+	<div id="pagewrap" class="tf_box hfeed site">
+		<div id="headerwrap" class=' tf_box'>
+
+
+			<div class="header-icons tf_hide">
+				<a id="menu-icon" class="tf_inline_b tf_text_dec" href="#mobile-menu" aria-label="Menu"><span
+						class="menu-icon-inner tf_inline_b tf_vmiddle tf_overflow"></span><span
+						class="screen-reader-text">Menu</span></a>
+			</div>
+
+			<header id="header" class="tf_box pagewidth tf_clearfix" itemscope="itemscope"
+				itemtype="https://schema.org/WPHeader">
+
+
+				<div class="header-bar tf_box">
+					<div id="site-logo"><a href="Contact1.html" title="Downloads"><img
+								src="https://empowerindia.in/en-in/wp-content/uploads/2024/04/Empower-logo.jpeg"
+								alt="Downloads" width="150" height="" class="site-logo-image" data-tf-not-load="1"
+								importance="high"></a></div>
+				</div>
+				<!-- /.header-bar -->
+
+				<div id="mobile-menu" class="sidemenu sidemenu-off tf_scrollbar">
+
+					<div class="navbar-wrapper tf_clearfix">
+						<div class="social-widget tf_inline_b tf_vmiddle">
+						</div>
+						<!-- /.social-widget -->
+
+
+
+						<nav id="main-nav-wrap" itemscope="itemscope"
+							itemtype="https://schema.org/SiteNavigationElement">
+							<ul id="main-nav" class="main-nav tf_clearfix tf_box">
+								<li id="menu-item-107"
+									class="menu-item-custom-107 menu-item menu-item-type-custom menu-item-object-custom menu-item-107">
+									<a href="Home.html">HOME</a> </li>
+								<li id="menu-item-108"
+									class="menu-item-custom-108 menu-item menu-item-type-custom menu-item-object-custom menu-item-108">
+									<a href="About – Empower India.html">ABOUT</a> </li>
+								<li id="menu-item-109"
+									class="menu-item-custom-109 menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children has-sub-menu menu-item-109"
+									aria-haspopup="true"><a href="Services .html">SERVICES ▼<span
+											class="child-arrow"></span></a>
+									<ul class="sub-menu">
+										<li id="menu-item-110"
+											class="menu-item-custom-110 menu-item menu-item-type-custom menu-item-object-custom menu-item-110 menu-custom-110-parent-109">
+											<a href="Datacenter.html">Data Centre Infrastructure Management</a> </li>
+										<li id="menu-item-111"
+											class="menu-item-custom-111 menu-item menu-item-type-custom menu-item-object-custom menu-item-111 menu-custom-111-parent-109">
+											<a href="Renewable.html">Renewable Energy Generation Solutions</a> </li>
+									</ul>
+								</li>
+								<li id="menu-item-113"
+									class="menu-item-custom-113 menu-item menu-item-type-custom menu-item-object-custom   menu-item-home menu-item-113">
+									<a href="Investor.html" aria-current="page">INVESTORS</a> </li>
+								<li id="menu-item-116"
+									class="menu-item-custom-116 menu-item menu-item-type-custom menu-item-object-custom menu-item-116">
+									<a href="Contact.html">CONTACT</a> </li>
+							</ul>
+						</nav>
+						<!-- /#main-nav-wrap -->
+					</div>
+
+					<!-- /header-widgets -->
+
+					<a id="menu-icon-close" aria-label="Close menu" class="tf_close tf_hide" href="#"><span
+							class="screen-reader-text">Close Menu</span></a>
+
+				</div><!-- #mobile-menu -->
+				<!-- /#mobile-menu -->
+
+
+
+			</header>
+			<!-- /#header -->
+
+		</div>
+		<!-- /#headerwrap -->
+
+		<div id="body" class="tf_box tf_clear tf_mw tf_clearfix">
+
+			<!-- layout-container -->
+			<div id="layout" class="pagewidth tf_box tf_clearfix">
+				<!-- content -->
+				<main id="content" class="tf_box tf_clearfix">
+					<div id="page-9" class="type-page">
+						<div class="page-content entry-content">
+							<!--themify_builder_content-->
+							<div id="themify_builder_content-9" data-postid="9"
+								class="themify_builder_content themify_builder_content-9 themify_builder tf_clear">
+								<div data-css_id="jodx890" data-lazy="1"
+									class="module_row themify_builder_row fullwidth tb_jodx890 tb_first tf_w">
+									<div class="row_inner col_align_top tb_col_count_1 tf_box tf_rel">
+										<div data-lazy="1" class="module_column tb-column col-full tb_w0d1891 first">
+											<!-- module template_part -->
+											<div class="module module-layout-part tb_v0kv460 ">
+												<div class="tb_layout_part_wrap tf_w"><!--themify_builder_content-->
+													<div class="themify_builder_content themify_builder_content-246 themify_builder not_editable_builder in_the_loop"
+														data-postid="246">
+														<div data-lazy="1"
+															class="module_row themify_builder_row tb_xw2t635 tf_w">
+															<div
+																class="row_inner col_align_top tb_col_count_1 tf_box tf_rel">
+																<div data-lazy="1"
+																	class="module_column tb-column col-full tb_xv3a638 first">
+																	<!-- module text -->
+																	<div class="module module-text tb_5szu381   "
+																		data-lazy="1">
+																		<div class="tb_text_wrap">
+																			<h1 style="text-align: center;">
+																				<strong>Downloads</strong></h1>
+																		</div>
+																	</div>
+																	<!-- /module text -->
+																</div>
+															</div>
+														</div>
+													</div>
+													<!--/themify_builder_content-->
+												</div>
+											</div>
+											<!-- /module template_part -->
+										</div>
+									</div>
+								</div>
+								<div data-css_id="jtl3187" data-lazy="1"
+									class="module_row themify_builder_row fullwidth_row_container tb_jtl3187 tf_w">
+									<div class="row_inner col_align_top tb_col_count_1 tf_box tf_rel">
+										<div data-lazy="1" class="module_column tb-column col-full tb_2k6c191 first">
+											<!-- module template_part -->
+											<div class="module module-layout-part tb_z5vg588 ">
+												<div class="tb_layout_part_wrap tf_w"><!--themify_builder_content-->
+													<div class="themify_builder_content themify_builder_content-56 themify_builder not_editable_builder in_the_loop"
+														data-postid="56">
+														<div data-lazy="1"
+															class="module_row themify_builder_row tb_m46l410 tf_w">
+															<div
+																class="row_inner col_align_top tb_col_count_1 tf_box tf_rel">
+																<div data-lazy="1"
+																	class="module_column tb-column col-full tb_4a3c411 first">
+																	<!-- module tab -->
+																	<div id="tb_e1u2391"
+																		class="module ui module-tab tb_e1u2391 vertical  transparent tabs wow"
+																		data-tf-animation="fadeIn"
+																		data-tf-animation_delay="0.4" data-lazy="1">
+																		<div class="tab-nav-current-active tf_hide">
+																			<span class="tab_burger_icon tf_rel"></span>
+																			<span class="tb_tab_title">Appointment
+																				Letters</span>
+																		</div>
+																		<ul class="tab-nav tf_clearfix">
+																			<li class="current" aria-expanded="true">
+																				<a href="#tab-tb_e1u2391-0">
+																					Appointment Letters </a>
+																			</li>
+																			<li aria-expanded="false">
+																				<a href="#tab-tb_e1u2391-1">
+																					AGM Notices </a>
+																			</li>
+																			<li aria-expanded="false">
+																				<a href="#tab-tb_e1u2391-2">
+																					Annual Reports </a>
+																			</li>
+																			<li aria-expanded="false">
+																				<a href="#tab-tb_e1u2391-3">
+																					Board Meeting Intimations </a>
+																			</li>
+																			<li aria-expanded="false">
+																				<a href="#tab-tb_e1u2391-4">
+																					Board Meeting Outcomes </a>
+																			</li>
+																			<li aria-expanded="false">
+																				<a href="#tab-tb_e1u2391-5">
+																					Book Closure </a>
+																			</li>
+																			<li aria-expanded="false">
+																				<a href="#tab-tb_e1u2391-6">
+																					BSE Compliances </a>
+																			</li>
+																			<li aria-expanded="false">
+																				<a href="#tab-tb_e1u2391-7">
+																					Policies </a>
+																			</li>
+																			<li aria-expanded="false">
+																				<a href="#tab-tb_e1u2391-8">
+																					Resignation Letters </a>
+																			</li>
+																			<li aria-expanded="false">
+																				<a href="#tab-tb_e1u2391-9">
+																					Scrutinizer's Report </a>
+																			</li>
+																			<li aria-expanded="false">
+																				<a href="#tab-tb_e1u2391-10">
+																					Secretarial Audit Reports </a>
+																			</li>
+																			<li aria-expanded="false">
+																				<a href="#tab-tb_e1u2391-11">
+																					Trading Windows Closure </a>
+																			</li>
+																			<li aria-expanded="false">
+																				<a href="#tab-tb_e1u2391-12">
+																					Transfer to IEPF </a>
+																			</li>
+																			<li aria-expanded="false">
+																				<a href="#tab-tb_e1u2391-13">
+																					Voting Results </a>
+																			</li>
+																			<li aria-expanded="false">
+																				<a href="#tab-tb_e1u2391-14">
+																					Updates </a>
+																			</li>
+																			<li aria-expanded="false">
+																				<a href="#tab-tb_e1u2391-15">
+																					Subsidiary Financials </a>
+																			</li>
+																			<li aria-expanded="false">
+																				<a href="#tab-tb_e1u2391-16">
+																					Others </a>
+																			</li>
+																		</ul>
+																		<div data-id="tab-tb_e1u2391-0"
+																			class="tab-content tf_clear"
+																			aria-hidden="false">
+																			<div data-lazy="1"
+																				class="module_subrow themify_builder_sub_row tf_w col_align_top tb_col_count_1 tb_qjo1648">
+																				<div data-lazy="1"
+																					class="module_column sub_column tb_vzor648 first">
+																					<!-- module text -->
+																					<div class="module module-text tb_hf9z648   "
+																						data-lazy="1">
+																						<div class="tb_text_wrap">
+																							<p><a style="color: #000000;"
+																									href="https://empowerindia.in/en-in/wp-content/uploads/2025/04/Composition-of-Board-of-Directors.pdf">Composition
+																									of Board of
+																									Directors</a></p>
+																						</div>
+																					</div>
+																					<!-- /module text --><!-- module text -->
+																					<div class="module module-text tb_akmt458   "
+																						data-lazy="1">
+																						<div class="tb_text_wrap">
+																							<p><a
+																									href="https://empowerindia.in/en-in/wp-content/uploads/2025/04/Composition-of-Board-of-Directors.pdf">Composition
+																									of Board of
+																									Directors</a></p>
+																						</div>
+																					</div>
+																					<!-- /module text --><!-- module text -->
+																					<div class="module module-text tb_is7i133   "
+																						data-lazy="1">
+																						<div class="tb_text_wrap">
+																							<p><span
+																									style="color: #000000;"><a
+																										href="https://empowerindia.in/en-in/wp-content/uploads/2025/04/MOA.pdf">MOA</a></span>
+																							</p>
+																						</div>
+																					</div>
+																					<!-- /module text --><!-- module text -->
+																					<div class="module module-text tb_7tdi80   "
+																						data-lazy="1">
+																						<div class="tb_text_wrap">
+																							<p><span
+																									style="color: #000000;"><a
+																										href="https://empowerindia.in/en-in/wp-content/uploads/2025/04/AOA.pdf">AOA</a></span>
+																							</p>
+																						</div>
+																					</div>
+																					<!-- /module text -->
+																				</div>
+																			</div>
+																		</div>
+																		<div data-id="tab-tb_e1u2391-1"
+																			class="tab-content tf_clear"
+																			aria-hidden="true">
+																			<div data-lazy="1"
+																				class="module_subrow themify_builder_sub_row tf_w col_align_top tb_col_count_1 tb_41l0648">
+																				<div data-lazy="1"
+																					class="module_column sub_column tb_pnwv648 first">
+																					<!-- module text -->
+																					<div class="module module-text tb_0wr3648   "
+																						data-lazy="1">
+																						<div class="tb_text_wrap">
+																							Tab Content </div>
+																					</div>
+																					<!-- /module text -->
+																				</div>
+																			</div>
+																		</div>
+																		<div data-id="tab-tb_e1u2391-2"
+																			class="tab-content tf_clear"
+																			aria-hidden="true">
+																			<div data-lazy="1"
+																				class="module_subrow themify_builder_sub_row tf_w col_align_top tb_col_count_1 tb_30t7648">
+																				<div data-lazy="1"
+																					class="module_column sub_column tb_c4o6648 first">
+																					<!-- module text -->
+																					<div class="module module-text tb_lp7v648   "
+																						data-lazy="1">
+																						<div class="tb_text_wrap">
+																							Tab Content </div>
+																					</div>
+																					<!-- /module text -->
+																				</div>
+																			</div>
+																		</div>
+																		<div data-id="tab-tb_e1u2391-3"
+																			class="tab-content tf_clear"
+																			aria-hidden="true">
+																			<div data-lazy="1"
+																				class="module_subrow themify_builder_sub_row tf_w col_align_top tb_col_count_1 tb_mip1648">
+																				<div data-lazy="1"
+																					class="module_column sub_column tb_znen649 first">
+																					<!-- module text -->
+																					<div class="module module-text tb_h7go649   "
+																						data-lazy="1">
+																						<div class="tb_text_wrap">
+																							Tab Content </div>
+																					</div>
+																					<!-- /module text -->
+																				</div>
+																			</div>
+																		</div>
+																		<div data-id="tab-tb_e1u2391-4"
+																			class="tab-content tf_clear"
+																			aria-hidden="true">
+																			<div data-lazy="1"
+																				class="module_subrow themify_builder_sub_row tf_w col_align_top tb_col_count_1 tb_75yg649">
+																				<div data-lazy="1"
+																					class="module_column sub_column tb_m0so649 first">
+																					<!-- module text -->
+																					<div class="module module-text tb_3f1h649   "
+																						data-lazy="1">
+																						<div class="tb_text_wrap">
+																							<p>Tab Content</p>
+																							<p><a
+																									href="https://cdn.shopify.com/s/files/1/0636/5226/6115/files/AFR_Mar_2025.pdf?v=1748506200">AFR_Mar_2025</a>
+																							</p>
+																						</div>
+																					</div>
+																					<!-- /module text -->
+																				</div>
+																			</div>
+																		</div>
+																		<div data-id="tab-tb_e1u2391-5"
+																			class="tab-content tf_clear"
+																			aria-hidden="true">
+																			<div data-lazy="1"
+																				class="module_subrow themify_builder_sub_row tf_w col_align_top tb_col_count_1 tb_xka6649">
+																				<div data-lazy="1"
+																					class="module_column sub_column tb_m3c9649 first">
+																					<!-- module text -->
+																					<div class="module module-text tb_epku649   "
+																						data-lazy="1">
+																						<div class="tb_text_wrap">
+																							Tab Content </div>
+																					</div>
+																					<!-- /module text -->
+																				</div>
+																			</div>
+																		</div>
+																		<div data-id="tab-tb_e1u2391-6"
+																			class="tab-content tf_clear"
+																			aria-hidden="true">
+																			<div data-lazy="1"
+																				class="module_subrow themify_builder_sub_row tf_w col_align_top tb_col_count_1 tb_8cga649">
+																				<div data-lazy="1"
+																					class="module_column sub_column tb_u163649 first">
+																					<!-- module text -->
+																					<div class="module module-text tb_2q93649   "
+																						data-lazy="1">
+																						<div class="tb_text_wrap">
+																							Tab Content </div>
+																					</div>
+																					<!-- /module text -->
+																				</div>
+																			</div>
+																		</div>
+																		<div data-id="tab-tb_e1u2391-7"
+																			class="tab-content tf_clear"
+																			aria-hidden="true">
+																			<div data-lazy="1"
+																				class="module_subrow themify_builder_sub_row tf_w col_align_top tb_col_count_1 tb_rzj6649">
+																				<div data-lazy="1"
+																					class="module_column sub_column tb_2jka649 first">
+																					<!-- module text -->
+																					<div class="module module-text tb_shay649   "
+																						data-lazy="1">
+																						<div class="tb_text_wrap">
+																							Tab Content </div>
+																					</div>
+																					<!-- /module text -->
+																				</div>
+																			</div>
+																		</div>
+																		<div data-id="tab-tb_e1u2391-8"
+																			class="tab-content tf_clear"
+																			aria-hidden="true">
+																			<div data-lazy="1"
+																				class="module_subrow themify_builder_sub_row tf_w col_align_top tb_col_count_1 tb_ji50649">
+																				<div data-lazy="1"
+																					class="module_column sub_column tb_603w649 first">
+																					<!-- module text -->
+																					<div class="module module-text tb_v3ms649   "
+																						data-lazy="1">
+																						<div class="tb_text_wrap">
+																							Tab Content </div>
+																					</div>
+																					<!-- /module text -->
+																				</div>
+																			</div>
+																		</div>
+																		<div data-id="tab-tb_e1u2391-9"
+																			class="tab-content tf_clear"
+																			aria-hidden="true">
+																			<div data-lazy="1"
+																				class="module_subrow themify_builder_sub_row tf_w col_align_top tb_col_count_1 tb_ypa1650">
+																				<div data-lazy="1"
+																					class="module_column sub_column tb_47qz650 first">
+																					<!-- module text -->
+																					<div class="module module-text tb_0nlk650   "
+																						data-lazy="1">
+																						<div class="tb_text_wrap">
+																							Tab Content </div>
+																					</div>
+																					<!-- /module text -->
+																				</div>
+																			</div>
+																		</div>
+																		<div data-id="tab-tb_e1u2391-10"
+																			class="tab-content tf_clear"
+																			aria-hidden="true">
+																			<div data-lazy="1"
+																				class="module_subrow themify_builder_sub_row tf_w col_align_top tb_col_count_1 tb_lh3b650">
+																				<div data-lazy="1"
+																					class="module_column sub_column tb_v1mq650 first">
+																					<!-- module text -->
+																					<div class="module module-text tb_et7q650   "
+																						data-lazy="1">
+																						<div class="tb_text_wrap">
+																							Tab Content </div>
+																					</div>
+																					<!-- /module text -->
+																				</div>
+																			</div>
+																		</div>
+																		<div data-id="tab-tb_e1u2391-11"
+																			class="tab-content tf_clear"
+																			aria-hidden="true">
+																			<div data-lazy="1"
+																				class="module_subrow themify_builder_sub_row tf_w col_align_top tb_col_count_1 tb_jaj1650">
+																				<div data-lazy="1"
+																					class="module_column sub_column tb_ysan650 first">
+																					<!-- module text -->
+																					<div class="module module-text tb_jaca650   "
+																						data-lazy="1">
+																						<div class="tb_text_wrap">
+																							Tab Content </div>
+																					</div>
+																					<!-- /module text -->
+																				</div>
+																			</div>
+																		</div>
+																		<div data-id="tab-tb_e1u2391-12"
+																			class="tab-content tf_clear"
+																			aria-hidden="true">
+																			<div data-lazy="1"
+																				class="module_subrow themify_builder_sub_row tf_w col_align_top tb_col_count_1 tb_s0oo650">
+																				<div data-lazy="1"
+																					class="module_column sub_column tb_unlb650 first">
+																					<!-- module text -->
+																					<div class="module module-text tb_1kvg650   "
+																						data-lazy="1">
+																						<div class="tb_text_wrap">
+																							Tab Content </div>
+																					</div>
+																					<!-- /module text -->
+																				</div>
+																			</div>
+																		</div>
+																		<div data-id="tab-tb_e1u2391-13"
+																			class="tab-content tf_clear"
+																			aria-hidden="true">
+																			<div data-lazy="1"
+																				class="module_subrow themify_builder_sub_row tf_w col_align_top tb_col_count_1 tb_cbt0650">
+																				<div data-lazy="1"
+																					class="module_column sub_column tb_7gbl650 first">
+																					<!-- module text -->
+																					<div class="module module-text tb_q36a650   "
+																						data-lazy="1">
+																						<div class="tb_text_wrap">
+																							Tab Content </div>
+																					</div>
+																					<!-- /module text -->
+																				</div>
+																			</div>
+																		</div>
+																		<div data-id="tab-tb_e1u2391-14"
+																			class="tab-content tf_clear"
+																			aria-hidden="true">
+																			<div data-lazy="1"
+																				class="module_subrow themify_builder_sub_row tf_w col_align_top tb_col_count_1 tb_zuld651">
+																				<div data-lazy="1"
+																					class="module_column sub_column tb_w41l651 first">
+																					<!-- module text -->
+																					<div class="module module-text tb_i5hu651   "
+																						data-lazy="1">
+																						<div class="tb_text_wrap">
+																							Tab Content </div>
+																					</div>
+																					<!-- /module text -->
+																				</div>
+																			</div>
+																		</div>
+																		<div data-id="tab-tb_e1u2391-15"
+																			class="tab-content tf_clear"
+																			aria-hidden="true">
+																			<div data-lazy="1"
+																				class="module_subrow themify_builder_sub_row tf_w col_align_top tb_col_count_1 tb_e0xz651">
+																				<div data-lazy="1"
+																					class="module_column sub_column tb_6umw651 first">
+																					<!-- module text -->
+																					<div class="module module-text tb_79y3651   "
+																						data-lazy="1">
+																						<div class="tb_text_wrap">
+																							Tab Content </div>
+																					</div>
+																					<!-- /module text -->
+																				</div>
+																			</div>
+																		</div>
+																		<div data-id="tab-tb_e1u2391-16"
+																			class="tab-content tf_clear"
+																			aria-hidden="true">
+																			<div data-lazy="1"
+																				class="module_subrow themify_builder_sub_row tf_w col_align_top tb_col_count_1 tb_jls3651">
+																				<div data-lazy="1"
+																					class="module_column sub_column tb_m191651 first">
+																					<!-- module text -->
+																					<div class="module module-text tb_rpep651   "
+																						data-lazy="1">
+																						<div class="tb_text_wrap">
+																							Tab Content </div>
+																					</div>
+																					<!-- /module text -->
+																				</div>
+																			</div>
+																		</div>
+																	</div>
+																	<!-- /module tab -->
+																</div>
+															</div>
+														</div>
+													</div>
+													<!--/themify_builder_content-->
+												</div>
+											</div>
+											<!-- /module template_part -->
+										</div>
+									</div>
+								</div>
+								<div data-lazy="1" class="module_row themify_builder_row tb_x0vd364 tf_w">
+									<div class="row_inner col_align_top tb_col_count_1 tf_box tf_rel">
+										<div data-lazy="1" class="module_column tb-column col-full tb_3bv2365 first">
+											<div data-lazy="1"
+												class="module_subrow themify_builder_sub_row tf_w col_align_top tb_col_count_2 tb_etpv642">
+												<div data-lazy="1"
+													class="module_column sub_column col4-2 tb_37nq642 first">
+												</div>
+												<div data-lazy="1"
+													class="module_column sub_column col4-2 tb_xnro642 last">
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<!--/themify_builder_content-->
+
+
+							<p></p>
+							<!-- /comments -->
+						</div>
+						<!-- /.post-content -->
+					</div>
+					<!-- /.type-page -->
+				</main>
+				<!-- /content -->
+			</div>
+			<!-- /layout-container -->
+		</div><!-- /body -->
+		<div class="back-top tf_textc tf_clearfix back-top-float back-top-hide">
+			<div class="arrow-up"><a aria-label="Back to top" href="#header"><span class="screen-reader-text">Back To
+						Top</span></a></div>
+		</div>
+	</div><!-- /#pagewrap -->
+	<!-- wp_footer -->
+	<script type="speculationrules">
+{"prefetch":[{"source":"document","where":{"and":[{"href_matches":"\/en-in\/*"},{"not":{"href_matches":["\/en-in\/wp-*.php","\/en-in\/wp-admin\/*","\/en-in\/wp-content\/uploads\/*","\/en-in\/wp-content\/*","\/en-in\/wp-content\/plugins\/*","\/en-in\/wp-content\/themes\/themify-ultra\/*","\/en-in\/*\\?(.+)"]}},{"not":{"selector_matches":"a[rel~=\"nofollow\"]"}},{"not":{"selector_matches":".no-prefetch, .no-prefetch a"}}]},"eagerness":"conservative"}]}
+</script>
+	<!--googleoff:all-->
+	<!--noindex-->
+	<!--noptimize-->
+	<script id="tf_vars" data-no-optimize="1" data-noptimize="1" data-no-minify="1" data-cfasync="false" defer="defer"
+		src="data:text/javascript;base64,dmFyIHRoZW1pZnlTY3JpcHQgPSB7ImhlYWRlclR5cGUiOiJoZWFkZXItaG9yaXpvbnRhbCIsInN0aWNreV9oZWFkZXIiOiIiLCJwYWdlTG9hZGVyRWZmZWN0IjoiIiwiaW5maW5pdGVFbmFibGUiOiIwIn07CnZhciB0YkxvY2FsU2NyaXB0ID0geyJzY3JvbGxIaWdobGlnaHQiOnsic3BlZWQiOjkwMC4wMDk5OTk5OTk5OTk5OTA5MDUwNTI5ODIyNzA3MTc2MjA4NDk2MDkzNzV9LCJhZGRvbnMiOnsidGFiIjp7ImpzIjoxfX19Owp2YXIgdGhlbWlmeV92YXJzID0geyJtZW51X3BvaW50IjoiOTAwIiwiYnJlYWtwb2ludHMiOnsidGFibGV0X2xhbmRzY2FwZSI6Wzc2OSwxMjgwXSwidGFibGV0IjpbNjAxLDc2OF0sIm1vYmlsZSI6NjAwfSwid3AiOiI2LjguMiIsImFqYXhfdXJsIjoiaHR0cHM6Ly9lbXBvd2VyaW5kaWEuaW4vZW4taW4vd3AtYWRtaW4vYWRtaW4tYWpheC5waHAiLCJtZW51X3Rvb2x0aXBzIjpbXSwicGx1Z2luX3VybCI6Imh0dHBzOi8vZW1wb3dlcmluZGlhLmluL2VuLWluL3dwLWNvbnRlbnQvcGx1Z2lucyIsImNvbnRlbnRfdXJsIjoiaHR0cHM6Ly9lbXBvd2VyaW5kaWEuaW4vZW4taW4vd3AtY29udGVudCIsImluY2x1ZGVzX3VybCI6Imh0dHBzOi8vZW1wb3dlcmluZGlhLmluL2VuLWluL3dwLWluY2x1ZGVzLyIsInRoZW1lX3YiOiI3LjYuMyIsImVtYWlsU3ViIjoiQ2hlY2sgdGhpcyBvdXQhIiwibm9wIjoiQ2hlY2sgdGhpcyBvdXQhIiwibGlnaHRib3giOnsiaTE4biI6eyJ0Q291bnRlciI6IiVjdXJyJSBvZiAldG90YWwlIn19LCJkb25lIjp7InRiX3RicCI6dHJ1ZSwidGJfbGF5b3V0LXBhcnQiOnRydWUsInRiX3RleHQiOnRydWUsInRiX3N0eWxlIjp0cnVlLCJ0Yl90YWIiOnRydWUsInRiX3RhYl90cmFuc3BhcmVudCI6dHJ1ZSwidGJfdGFiX3ZlcnRpY2FsIjp0cnVlfX07"></script>
+	<!--/noptimize-->
+	<!--/noindex-->
+	<!--googleon:all-->
+	<script defer="defer" data-v="7.6.9" data-pl-href="https://empowerindia.in/en-in/wp-content/plugins/fake.css"
+		data-no-optimize="1" data-noptimize="1"
+		src="https://empowerindia.in/en-in/wp-content/themes/themify-ultra/themify/js/main.js?ver=7.6.9"
+		id="themify-main-script-js"></script>
+
+
+	https://www.empowerindia.in/footer.php<!-- SCHEMA BEGIN -->
+	<script
+		type="application/ld+json">[{"@context":"https:\/\/schema.org","@type":"WebSite","url":"https:\/\/empowerindia.in\/en-in","potentialAction":{"@type":"SearchAction","target":"https:\/\/empowerindia.in\/en-in?s={search_term_string}","query-input":"required name=search_term_string"}},{"@context":"https:\/\/schema.org","@type":"WebPage","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/empowerindia.in\/en-in\/"},"headline":"Downloads","datePublished":"2021-07-02T15:52:55+05:30","dateModified":"2025-05-29T13:42:13+05:30","description":""}]</script>
+	<!-- /SCHEMA END -->
+</body>
+
+</html>
