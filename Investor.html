@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en-US">
 
 <head>
@@ -2435,11 +2435,12 @@
 				if (supabase) {
 					console.log('📡 Loading files from Supabase database...');
 					
-					// Load from Supabase database
-					console.log('🔍 Querying database for files...');
+					// Load from Supabase database - ONLY actual files, NOT custom tabs
+					console.log('🔍 Querying database for uploaded files only (excluding custom tabs)...');
 					const { data: files, error } = await supabase
 						.from('uploaded_files')
 						.select('*')
+						.neq('type', 'custom_tab')  // EXCLUDE custom tabs from file loading
 						.order('id', { ascending: true });
 					
 					console.log('📊 Database query result:', { files, error, count: files?.length || 0 });
@@ -2873,6 +2874,8 @@
 			const newTabId = `tab-${nextTabId}`;
 			const newPublicTabId = `tab-tb_e1u2391-${nextTabId}`;
 			
+			console.log(`🆕 Creating new tab: "${tabName}" with unique ID: ${newTabId} (public: ${newPublicTabId})`);
+			
 			// Add to tab mapping
 			tabMapping[newTabId] = newPublicTabId;
 			reverseTabMapping[newPublicTabId] = newTabId;
@@ -2923,34 +2926,47 @@
 			
 			// Save tab data to Supabase database (so everyone can see it)
 			const tabData = {
-				name: `TAB_${tabName}`, // Prefix to identify as tab data
+				name: tabName, // Store actual tab name in 'name' field
 				size: 0,
-				type: 'custom_tab',
-				url: newPublicTabId,
+				type: 'custom_tab', // Special type to identify custom tabs
+				url: newPublicTabId, // Store public tab ID in 'url' field
 				uploaddate: new Date().toISOString(),
 				id: Date.now(),
-				supabasepath: `tabs/${newTabId}`,
-				tabid: newTabId,
-				// Additional tab-specific data
-				tab_name: tabName,
-				public_id: newPublicTabId
+				supabasepath: `tabs/${newTabId}`, // Store admin tab ID path
+				tabid: newTabId // Store admin tab ID
 			};
 			
 			// Save to Supabase database so all users can see custom tabs
 			if (supabase) {
 				try {
-					console.log('💾 Saving custom tab to database:', tabData);
-					const { data: insertResult, error: dbError } = await supabase
-						.from('uploaded_files')
-						.insert([tabData])
-						.select();
+					console.log('💾 Saving custom tab to database...');
 					
-					if (dbError) {
-						console.error('❌ Tab save failed:', dbError.message);
-						showError(`Tab save failed: ${dbError.message}`);
-					} else {
-						console.log('✅ Custom tab saved to database successfully:', insertResult);
+					// Use REST API directly for more reliable database saving
+					const response = await fetch('https://slsqmfbodwgvndjcjjuj.supabase.co/rest/v1/uploaded_files', {
+						method: 'POST',
+						headers: {
+							'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+							'apikey': SUPABASE_ANON_KEY,
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify({
+							id: Date.now(),
+							name: tabName,  // tab name
+							size: 0,
+							type: 'custom_tab',
+							url: newPublicTabId,  // public tab id
+							uploaddate: new Date().toISOString(),
+							supabasepath: `tabs/${newTabId}`,
+							tabid: newTabId  // admin tab id
+						})
+					});
+
+					if (!response.ok) {
+						throw new Error(`HTTP error! status: ${response.status}`);
 					}
+
+					console.log('✅ Custom tab saved to database successfully');
+					
 				} catch (error) {
 					console.error('❌ Error saving tab:', error);
 				}
@@ -2970,6 +2986,7 @@
 			}
 			
 			nextTabId++;
+			console.log(`🔢 Incremented nextTabId to: ${nextTabId} for next new tab`);
 			closeModal();
 			alert(`✅ New tab "${tabName}" created successfully and placed above Others tab!`);
 		}
@@ -3132,21 +3149,40 @@
 					} else if (customTabs && customTabs.length > 0) {
 						console.log('📊 Found custom tabs in database:', customTabs.length);
 						
+						// Update nextTabId to ensure new tabs get unique IDs
+						let maxTabId = 16; // Start from default tab ID range
+						customTabs.forEach(tabData => {
+							const adminTabId = tabData.tabid;
+							if (adminTabId && adminTabId.startsWith('tab-')) {
+								const tabNumber = parseInt(adminTabId.split('-')[1]);
+								if (!isNaN(tabNumber) && tabNumber > maxTabId) {
+									maxTabId = tabNumber;
+								}
+							}
+						});
+						nextTabId = maxTabId + 1; // Set next ID to be higher than any existing
+						console.log('🔢 Updated nextTabId to:', nextTabId);
+						
 						// Create tabs from database data
 						customTabs.forEach(tabData => {
-							if (tabData.tab_name && tabData.public_id) {
-								const tabId = tabData.tabid || tabData.tab_id;
-								const publicTabId = tabData.public_id || tabData.url;
-								const tabName = tabData.tab_name;
-								
+							// Extract data using existing database columns
+							const tabName = tabData.name; // Tab name stored in 'name'
+							const publicTabId = tabData.url; // Public ID stored in 'url'
+							const adminTabId = tabData.tabid; // Admin ID stored in 'tabid'
+							
+							console.log('🔍 Processing custom tab:', { tabName, publicTabId, adminTabId });
+							
+							if (tabName && publicTabId && adminTabId) {
 								// Add to tab mapping
-								tabMapping[tabId] = publicTabId;
-								reverseTabMapping[publicTabId] = tabId;
+								tabMapping[adminTabId] = publicTabId;
+								reverseTabMapping[publicTabId] = adminTabId;
 								
 								// Check if tab already exists in DOM
 								const existingTab = document.querySelector(`a[href="#${publicTabId}"]`);
 								if (!existingTab) {
-									createCustomTabInDOM(tabId, publicTabId, tabName);
+									createCustomTabInDOM(adminTabId, publicTabId, tabName);
+								} else {
+									console.log('Tab already exists in DOM:', publicTabId);
 								}
 							}
 						});
@@ -3230,6 +3266,11 @@
 				addAdminControlsToTab(publicTabId);
 			}
 			
+			// ADDITION: Load any existing files for this custom tab
+			setTimeout(async () => {
+				await loadFilesForSpecificTab(tabId);
+			}, 500);
+			
 			console.log(`✅ Created custom tab in DOM: ${tabName} (${publicTabId})`);
 		}
 
@@ -3276,6 +3317,15 @@
 				await loadUploadedFiles(); // Then load uploaded files
 			}, 1000); // Delay to ensure DOM is fully loaded
 			
+			// IMMEDIATE PLATFORM CHECK (Addition - for instant loading on any system)
+			setTimeout(async () => {
+				console.log('🚀 IMMEDIATE: Loading tabs for any platform/system...');
+				await forceLoadAllTabs();
+				// ADDITION: Also immediately load files
+				console.log('🚀 IMMEDIATE: Loading files for any platform/system...');
+				await forceLoadAllFiles();
+			}, 100); // Very quick check
+			
 			// Secret admin access: Ctrl+Shift+A - redirects to admin page
 			document.addEventListener('keydown', function(e) {
 				if (e.ctrlKey && e.shiftKey && e.key === 'A') {
@@ -3293,6 +3343,334 @@
 				loadAdminDocuments();
 			}
 		});
+
+		// PLATFORM-UNIVERSAL TAB LOADING SYSTEM (Addition - doesn't change existing code)
+		// Multiple loading attempts to ensure tabs show on all platforms/systems
+		
+		// Force load tabs after 2 seconds (in case initial load was slow)
+		setTimeout(async () => {
+			console.log('🌍 Platform check 1: Ensuring tabs are visible...');
+			await forceLoadAllTabs();
+			// ADDITION: Also force load all uploaded files
+			await forceLoadAllFiles();
+		}, 2000);
+
+		// Force load tabs after 4 seconds (for slower systems)
+		setTimeout(async () => {
+			console.log('🌍 Platform check 2: Double-checking tabs...');
+			await forceLoadAllTabs();
+			// ADDITION: Also force load all uploaded files again
+			await forceLoadAllFiles();
+		}, 4000);
+
+		// Force load tabs after 7 seconds (final check)
+		setTimeout(async () => {
+			console.log('🌍 Platform check 3: Final tab verification...');
+			await forceLoadAllTabs();
+			// ADDITION: Final file verification
+			await forceLoadAllFiles();
+		}, 7000);
+
+		// Function to force load all tabs from database (ADDITION)
+		async function forceLoadAllTabs() {
+			if (!supabase) {
+				console.log('⚠️ Supabase not available for tab loading');
+				return;
+			}
+
+			try {
+				console.log('🔍 Checking database for custom tabs...');
+				
+				// Direct database query using REST API (more reliable)
+				const response = await fetch('https://slsqmfbodwgvndjcjjuj.supabase.co/rest/v1/uploaded_files?type=eq.custom_tab&order=id.asc', {
+					headers: {
+						'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+						'apikey': SUPABASE_ANON_KEY
+					}
+				});
+
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+
+				const customTabs = await response.json();
+				console.log('📊 Found custom tabs in database:', customTabs.length);
+
+				if (customTabs && customTabs.length > 0) {
+					// Update nextTabId to ensure new tabs get unique IDs
+					let maxTabId = 16; // Start from default tab ID range
+					customTabs.forEach(tabData => {
+						const adminTabId = tabData.tabid;
+						if (adminTabId && adminTabId.startsWith('tab-')) {
+							const tabNumber = parseInt(adminTabId.split('-')[1]);
+							if (!isNaN(tabNumber) && tabNumber > maxTabId) {
+								maxTabId = tabNumber;
+							}
+						}
+					});
+					nextTabId = maxTabId + 1; // Set next ID to be higher than any existing
+					console.log('🔢 Force update nextTabId to:', nextTabId);
+
+					// Count existing custom tabs in DOM
+					const existingTabs = document.querySelectorAll('[data-id^="tab-tb_e1u2391-"]:not([data-id="tab-tb_e1u2391-0"]):not([data-id="tab-tb_e1u2391-1"]):not([data-id="tab-tb_e1u2391-2"]):not([data-id="tab-tb_e1u2391-3"]):not([data-id="tab-tb_e1u2391-4"]):not([data-id="tab-tb_e1u2391-5"]):not([data-id="tab-tb_e1u2391-6"]):not([data-id="tab-tb_e1u2391-7"]):not([data-id="tab-tb_e1u2391-8"]):not([data-id="tab-tb_e1u2391-9"]):not([data-id="tab-tb_e1u2391-10"]):not([data-id="tab-tb_e1u2391-11"]):not([data-id="tab-tb_e1u2391-12"]):not([data-id="tab-tb_e1u2391-13"]):not([data-id="tab-tb_e1u2391-14"]):not([data-id="tab-tb_e1u2391-15"]):not([data-id="tab-tb_e1u2391-16"])');
+					
+					console.log(`📊 Platform check: ${customTabs.length} in DB vs ${existingTabs.length} in DOM`);
+
+					// Force create missing tabs
+					customTabs.forEach(tabData => {
+						const tabName = tabData.name;
+						const publicTabId = tabData.url;
+						const adminTabId = tabData.tabid;
+
+						if (tabName && publicTabId && adminTabId) {
+							// Check if this specific tab exists
+							const existingTab = document.querySelector(`a[href="#${publicTabId}"]`);
+							
+							if (!existingTab) {
+								console.log(`🚀 Creating missing tab: ${tabName} (${publicTabId})`);
+								
+								// Add to mapping
+								tabMapping[adminTabId] = publicTabId;
+								reverseTabMapping[publicTabId] = adminTabId;
+								
+								// Force create tab in DOM
+								forceCreateTabInDOM(adminTabId, publicTabId, tabName);
+							}
+						}
+					});
+				} else {
+					console.log('📭 No custom tabs found in database');
+				}
+
+			} catch (error) {
+				console.error('❌ Error in forceLoadAllTabs:', error);
+			}
+		}
+
+		// Force create tab in DOM (ADDITION - robust version)
+		function forceCreateTabInDOM(adminTabId, publicTabId, tabName) {
+			try {
+				// Find tab navigation container
+				const tabNav = document.querySelector('.tab-nav');
+				const othersTab = document.querySelector(`a[href="#tab-tb_e1u2391-16"]`)?.parentElement;
+				
+				if (!tabNav || !othersTab) {
+					console.error('❌ Tab navigation elements not found');
+					return;
+				}
+
+				// Create new tab navigation item
+				const newTabItem = document.createElement('li');
+				newTabItem.setAttribute('aria-expanded', 'false');
+				newTabItem.innerHTML = `<a href="#${publicTabId}">${tabName}</a>`;
+				
+				// Insert before Others tab
+				tabNav.insertBefore(newTabItem, othersTab);
+
+				// Find tab content container
+				const tabContainer = document.querySelector('.tab-content[data-id="tab-tb_e1u2391-16"]')?.parentElement;
+				const othersTabContent = document.querySelector('.tab-content[data-id="tab-tb_e1u2391-16"]');
+				
+				if (!tabContainer || !othersTabContent) {
+					console.error('❌ Tab content elements not found');
+					return;
+				}
+
+				// Create new tab content
+				const newTabContent = document.createElement('div');
+				newTabContent.setAttribute('data-id', publicTabId);
+				newTabContent.className = 'tab-content tf_clear';
+				newTabContent.setAttribute('aria-hidden', 'true');
+				newTabContent.innerHTML = `
+					<div data-lazy="1" class="module_subrow themify_builder_sub_row tf_w col_align_top tb_col_count_1 tb_jls3651">
+						<div data-lazy="1" class="module_column sub_column tb_m191651 first">
+							<div class="module module-text tb_rpep651" data-lazy="1">
+								<div class="tb_text_wrap">
+									<p style="margin: 20px 0;"></p>
+								</div>
+							</div>
+						</div>
+					</div>
+				`;
+
+				// Insert before Others tab content
+				tabContainer.insertBefore(newTabContent, othersTabContent);
+
+				// Add click event
+				newTabItem.addEventListener('click', function(e) {
+					e.preventDefault();
+					switchToTab(publicTabId);
+				});
+
+				// ADDITION: Load any existing files for this newly created tab
+				setTimeout(async () => {
+					await loadFilesForSpecificTab(adminTabId);
+				}, 500);
+
+				console.log(`✅ Successfully created tab: ${tabName}`);
+
+			} catch (error) {
+				console.error('❌ Error creating tab in DOM:', error);
+			}
+		}
+
+		// Page focus/visibility handler (ADDITION - reload when switching between systems)
+		document.addEventListener('visibilitychange', function() {
+			if (!document.hidden) {
+				console.log('👁️ Page became visible - checking for missing tabs...');
+				setTimeout(async () => {
+					await forceLoadAllTabs();
+					// ADDITION: Also reload files when page becomes visible
+					await forceLoadAllFiles();
+				}, 1000);
+			}
+		});
+
+		// Window focus handler (ADDITION - for platform switching)
+		window.addEventListener('focus', function() {
+			console.log('🎯 Window focused - verifying tab visibility...');
+			setTimeout(async () => {
+				await forceLoadAllTabs();
+				// ADDITION: Also verify files when window gets focus
+				await forceLoadAllFiles();
+			}, 500);
+		});
+
+		// Periodic check (ADDITION - every 30 seconds when page is active)
+		setInterval(async () => {
+			if (!document.hidden && document.hasFocus()) {
+				await forceLoadAllTabs();
+				// ADDITION: Also check files periodically
+				await forceLoadAllFiles();
+			}
+		}, 30000);
+
+		// FORCE LOAD ALL FILES FUNCTION (Addition - ensures files persist after logout)
+		async function forceLoadAllFiles() {
+			if (!supabase) {
+				console.log('⚠️ Supabase not available for file loading');
+				return;
+			}
+
+			try {
+				console.log('📁 Checking database for uploaded files...');
+				
+				// Direct database query for all files (excluding custom tabs)
+				const response = await fetch('https://slsqmfbodwgvndjcjjuj.supabase.co/rest/v1/uploaded_files?type=neq.custom_tab&order=id.asc', {
+					headers: {
+						'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+						'apikey': SUPABASE_ANON_KEY
+					}
+				});
+
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+
+				const uploadedFiles = await response.json();
+				console.log('📊 Found uploaded files in database:', uploadedFiles.length);
+
+				if (uploadedFiles && uploadedFiles.length > 0) {
+					// Count existing files in DOM
+					const existingFiles = document.querySelectorAll('.uploaded-file, .uploaded-file-link');
+					console.log(`📊 File check: ${uploadedFiles.length} in DB vs ${existingFiles.length} in DOM`);
+
+					// Clear existing files to avoid duplicates
+					existingFiles.forEach(file => file.remove());
+					document.querySelectorAll('.uploaded-file-br').forEach(br => br.remove());
+
+					// Force create all files in their respective tabs
+					uploadedFiles.forEach(fileData => {
+						const adminTabId = fileData.tabid;
+						if (adminTabId) {
+							console.log(`📁 Loading file: ${fileData.name} into tab: ${adminTabId}`);
+							showFileInTab(adminTabId, fileData);
+						}
+					});
+
+					console.log('✅ All files loaded successfully from database');
+				} else {
+					console.log('📭 No uploaded files found in database');
+				}
+
+			} catch (error) {
+				console.error('❌ Error in forceLoadAllFiles:', error);
+			}
+		}
+
+		// LOAD FILES FOR SPECIFIC TAB (Addition - for new custom tabs)
+		async function loadFilesForSpecificTab(adminTabId) {
+			if (!supabase || !adminTabId) {
+				console.log('⚠️ Supabase not available or no tab ID provided');
+				return;
+			}
+
+			try {
+				console.log(`📁 Checking database for files in tab: ${adminTabId}...`);
+				
+				// Query database for files in this specific tab
+				const response = await fetch(`https://slsqmfbodwgvndjcjjuj.supabase.co/rest/v1/uploaded_files?tabid=eq.${adminTabId}&type=neq.custom_tab&order=id.asc`, {
+					headers: {
+						'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+						'apikey': SUPABASE_ANON_KEY
+					}
+				});
+
+				if (!response.ok) {
+					throw new Error(`HTTP error! status: ${response.status}`);
+				}
+
+				const tabFiles = await response.json();
+				console.log(`📊 Found ${tabFiles.length} files in tab ${adminTabId}`);
+
+				if (tabFiles && tabFiles.length > 0) {
+					// Load all files for this specific tab
+					tabFiles.forEach(fileData => {
+						console.log(`📁 Loading file: ${fileData.name} into tab: ${adminTabId}`);
+						showFileInTab(adminTabId, fileData);
+					});
+
+					console.log(`✅ All files loaded for tab ${adminTabId}`);
+				} else {
+					console.log(`📭 No files found for tab ${adminTabId} (this is normal for new tabs)`);
+				}
+
+			} catch (error) {
+				console.error(`❌ Error loading files for tab ${adminTabId}:`, error);
+			}
+		}
+
+		// ULTRA-FAST LOADING FOR ANY PLATFORM (Addition - loads even before DOM is ready)
+		// This ensures tabs show immediately on any system/platform
+		setTimeout(async () => {
+			console.log('⚡ ULTRA-FAST: Pre-loading tabs for maximum compatibility...');
+			if (window.supabase && SUPABASE_URL && SUPABASE_ANON_KEY) {
+				try {
+					// Load tabs first
+					const tabResponse = await fetch('https://slsqmfbodwgvndjcjjuj.supabase.co/rest/v1/uploaded_files?type=eq.custom_tab&order=id.asc', {
+						headers: {
+							'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+							'apikey': SUPABASE_ANON_KEY
+						}
+					});
+					const tabs = await tabResponse.json();
+					console.log(`⚡ ULTRA-FAST found ${tabs.length} tabs to pre-load`);
+					
+					// Load files for those tabs
+					const fileResponse = await fetch('https://slsqmfbodwgvndjcjjuj.supabase.co/rest/v1/uploaded_files?type=neq.custom_tab&order=id.asc', {
+						headers: {
+							'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+							'apikey': SUPABASE_ANON_KEY
+						}
+					});
+					const files = await fileResponse.json();
+					console.log(`⚡ ULTRA-FAST found ${files.length} files to pre-load`);
+					
+				} catch (error) {
+					console.log('⚡ ULTRA-FAST loading will retry when DOM is ready');
+				}
+			}
+		}, 50); // Run almost immediately
 	</script>
 
 	<!-- SCHEMA BEGIN -->
