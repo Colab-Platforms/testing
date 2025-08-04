@@ -1822,9 +1822,30 @@
 		async function checkAdminLogin() {
 			console.log('🔐 checkAdminLogin() called');
 			
-			const storedLogin = localStorage.getItem('adminLoggedIn');
+			// Check admin login from Supabase instead of localStorage
+			let isAdminLoggedIn = false;
+			try {
+				if (supabase) {
+					const sessionId = sessionStorage.getItem('admin_session_id');
+					if (sessionId) {
+						const { data, error } = await supabase
+							.from('admin_sessions')
+							.select('*')
+							.eq('session_id', sessionId)
+							.eq('is_active', true)
+							.single();
+						
+						if (!error && data) {
+							isAdminLoggedIn = true;
+							console.log('✅ Admin session found in database');
+						}
+					}
+				}
+			} catch (error) {
+				console.log('⚠️ Admin session check failed:', error);
+			}
 			
-			if (storedLogin === 'true') {
+			if (isAdminLoggedIn) {
 				isLoggedIn = true;
 				console.log('✅ Admin logged in, showing controls');
 				showAdminControls();
@@ -1850,32 +1871,86 @@
 		}
 
 		// Admin login function
-		function adminLogin() {
+		async function adminLogin() {
 			const email = prompt('Admin Email:');
 			const password = prompt('Admin Password:');
 			
 			if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
-				isLoggedIn = true;
-				localStorage.setItem('adminLoggedIn', 'true');
-				showAdminControls();
-				alert('✅ Admin login successful!');
-				loadUploadedFiles();
+				try {
+					if (supabase) {
+						// Create admin session in database
+						const sessionId = 'admin_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+						
+						const { error } = await supabase
+							.from('admin_sessions')
+							.insert([{
+								session_id: sessionId,
+								admin_email: email,
+								login_time: new Date().toISOString(),
+								is_active: true
+							}]);
+						
+						if (error) {
+							console.error('Error creating admin session:', error);
+							// Create table if it doesn't exist
+							if (error.message.includes('relation "admin_sessions" does not exist')) {
+								alert('⚠️ Admin sessions table not found. Please create the database table first.');
+								return;
+							}
+						} else {
+							// Store session ID in sessionStorage
+							sessionStorage.setItem('admin_session_id', sessionId);
+							console.log('✅ Admin session created:', sessionId);
+						}
+					}
+					
+					isLoggedIn = true;
+					showAdminControls();
+					alert('✅ Admin login successful!');
+					loadUploadedFiles();
+				} catch (error) {
+					console.error('Admin login error:', error);
+					alert('❌ Login error. Please try again.');
+				}
 			} else {
 				alert('❌ Invalid credentials!');
 			}
 		}
 
 		// Admin logout function
-		function adminLogout() {
+		async function adminLogout() {
+			try {
+				if (supabase) {
+					const sessionId = sessionStorage.getItem('admin_session_id');
+					if (sessionId) {
+						// Deactivate session in database
+						const { error } = await supabase
+							.from('admin_sessions')
+							.update({ is_active: false, logout_time: new Date().toISOString() })
+							.eq('session_id', sessionId);
+						
+						if (error) {
+							console.error('Error deactivating session:', error);
+						} else {
+							console.log('✅ Admin session deactivated');
+						}
+					}
+					
+					// Clear session from sessionStorage
+					sessionStorage.removeItem('admin_session_id');
+				}
+			} catch (error) {
+				console.error('Logout error:', error);
+			}
+			
 			isLoggedIn = false;
-			localStorage.removeItem('adminLoggedIn');
 			hideAdminControls();
 			alert('🚪 Logged out successfully!');
 			location.reload();
 		}
 
 		// Show admin controls
-		function showAdminControls() {
+		async function showAdminControls() {
 			document.querySelectorAll('.admin-edit-icon').forEach(icon => {
 				icon.style.display = 'inline';
 				icon.style.opacity = '1';
@@ -1892,14 +1967,24 @@
 				addAdminControlsToTab(publicTabId);
 			});
 			
-			// Also check for any custom tabs that might not be in the main mapping
-			const allTabs = JSON.parse(localStorage.getItem('investorTabs') || '{}');
-			Object.keys(allTabs).forEach(tabId => {
-				const tabData = allTabs[tabId];
-				if (tabData && tabData.publicId) {
-					addAdminControlsToTab(tabData.publicId);
+			// Also check for any custom tabs from Supabase database
+			try {
+				if (supabase) {
+					const { data: customTabs, error } = await supabase
+						.from('investor_tabs')
+						.select('*');
+					
+					if (!error && customTabs) {
+						customTabs.forEach(tabRecord => {
+							if (tabRecord.public_tab_id) {
+								addAdminControlsToTab(tabRecord.public_tab_id);
+							}
+						});
+					}
 				}
-			});
+			} catch (error) {
+				console.error('Error loading custom tabs for admin controls:', error);
+			}
 			
 			// Show logout button
 			if (!document.getElementById('adminLogoutBtn')) {
@@ -2342,8 +2427,9 @@
 					
 					if (error) {
 						console.error('❌ Error loading files from database:', error);
-						console.log('📁 Trying localStorage fallback...');
-						loadFromLocalStorageFallback();
+						if (error.message.includes('relation "uploaded_files" does not exist')) {
+							console.log('⚠️ uploaded_files table does not exist. Please create the database table.');
+						}
 						return;
 					}
 					
@@ -2369,33 +2455,10 @@
 						console.log('📭 No files found in database');
 					}
 				} else {
-					console.log('⚠️ Supabase not available, using localStorage fallback');
-					loadFromLocalStorageFallback();
+					console.error('❌ Supabase not available. Cannot load files.');
 				}
 			} catch (error) {
 				console.error('❌ Error in loadUploadedFiles:', error);
-				console.log('📁 Trying localStorage fallback...');
-				loadFromLocalStorageFallback();
-			}
-		}
-		
-		// Fallback function to load from localStorage
-		function loadFromLocalStorageFallback() {
-			try {
-				const allFiles = JSON.parse(localStorage.getItem('uploadedFiles') || '{}');
-				console.log('Loading files from localStorage fallback:', allFiles);
-				
-				Object.keys(allFiles).forEach(adminTabId => {
-					console.log('Processing adminTabId:', adminTabId, 'files:', allFiles[adminTabId]);
-					if (allFiles[adminTabId] && allFiles[adminTabId].length > 0) {
-						allFiles[adminTabId].forEach(fileData => {
-							console.log('Loading file:', fileData.name, 'in tab:', adminTabId);
-							showFileInTab(adminTabId, fileData);
-						});
-					}
-				});
-			} catch (error) {
-				console.error('Error in localStorage fallback:', error);
 			}
 		}
 
