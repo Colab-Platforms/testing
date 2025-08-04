@@ -1784,13 +1784,108 @@
 		if (SUPABASE_URL !== 'YOUR_SUPABASE_URL_HERE' && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY_HERE') {
 			supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 			console.log('✅ Supabase initialized successfully');
+			
+			// Verify connection and setup
+			setTimeout(async () => {
+				await verifySupabaseSetup();
+			}, 2000);
 		} else {
 			console.log('⚠️ Please update Supabase credentials in the code');
+		}
+		
+		// Verify Supabase setup and auto-create resources if needed
+		async function verifySupabaseSetup() {
+			try {
+				console.log('🔍 Verifying Supabase setup...');
+				
+				// Test database connection
+				const { data, error } = await supabase
+					.from('uploaded_files')
+					.select('count', { count: 'exact' })
+					.limit(1);
+				
+				if (error) {
+					console.error('❌ Database table error:', error.message);
+					if (error.message.includes('relation "uploaded_files" does not exist')) {
+						console.log('⚠️ Database table "uploaded_files" does not exist. Please create it in Supabase SQL Editor.');
+					}
+				} else {
+					console.log('✅ Database table accessible');
+				}
+				
+				// Test storage bucket
+				const { data: buckets, error: bucketError } = await supabase.storage.listBuckets();
+				const investorBucket = buckets?.find(bucket => bucket.name === 'investor-files');
+				
+				if (!investorBucket) {
+					console.log('📦 Creating storage bucket...');
+					await createBucketIfNotExists();
+				} else {
+					console.log('✅ Storage bucket exists');
+				}
+				
+			} catch (err) {
+				console.error('❌ Supabase verification error:', err);
+			}
 		}
 
 		let isLoggedIn = false;
 		let currentEditingTab = null;
 		let nextTabId = 17;
+		
+		// Show user-friendly error messages
+		function showError(message, isTemporary = true) {
+			const errorDiv = document.createElement('div');
+			errorDiv.style.cssText = `
+				position: fixed;
+				top: 20px;
+				left: 50%;
+				transform: translateX(-50%);
+				background: #ff4444;
+				color: white;
+				padding: 15px 25px;
+				border-radius: 8px;
+				z-index: 10001;
+				font-weight: bold;
+				box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+			`;
+			errorDiv.textContent = message;
+			document.body.appendChild(errorDiv);
+			
+			if (isTemporary) {
+				setTimeout(() => {
+					if (errorDiv.parentNode) {
+						errorDiv.parentNode.removeChild(errorDiv);
+					}
+				}, 5000);
+			}
+		}
+		
+		// Show success messages
+		function showSuccess(message) {
+			const successDiv = document.createElement('div');
+			successDiv.style.cssText = `
+				position: fixed;
+				top: 20px;
+				left: 50%;
+				transform: translateX(-50%);
+				background: #4CAF50;
+				color: white;
+				padding: 15px 25px;
+				border-radius: 8px;
+				z-index: 10001;
+				font-weight: bold;
+				box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+			`;
+			successDiv.textContent = message;
+			document.body.appendChild(successDiv);
+			
+			setTimeout(() => {
+				if (successDiv.parentNode) {
+					successDiv.parentNode.removeChild(successDiv);
+				}
+			}, 3000);
+		}
 
 		// Map admin panel tab IDs to public page tab IDs
 		const tabMapping = {
@@ -2138,15 +2233,34 @@
 				}
 				
 				closeModal();
-				alert(`✅ File "${file.name}" uploaded successfully!`);
+				showSuccess(`File "${file.name}" uploaded successfully!`);
 				
 			} catch (error) {
 				console.error('Upload error:', error);
-				alert(`❌ Error uploading file: ${error.message}`);
+				showError(`Error uploading file: ${error.message}`);
 			} finally {
 				// Reset button
 				uploadBtn.innerHTML = originalText;
 				uploadBtn.disabled = false;
+			}
+		}
+		
+		// Create Supabase storage bucket if it doesn't exist
+		async function createBucketIfNotExists() {
+			try {
+				const { data, error } = await supabase.storage.createBucket('investor-files', {
+					public: true,
+					allowedMimeTypes: null,
+					fileSizeLimit: null
+				});
+				
+				if (error && !error.message.includes('already exists')) {
+					console.error('Error creating bucket:', error);
+				} else {
+					console.log('✅ Storage bucket created or already exists');
+				}
+			} catch (err) {
+				console.error('Error in createBucketIfNotExists:', err);
 			}
 		}
 		
@@ -2191,18 +2305,18 @@
 				isSupabaseFile: true
 			};
 			
-			// Save metadata to Supabase database (NOT localStorage)
+			// Save metadata to Supabase database (using your table structure)
 			const { data: dbData, error: dbError } = await supabase
 				.from('uploaded_files')
 				.insert([{
-					tab_name: currentEditingTab,
-					file_name: file.name,
-					file_size: file.size,
-					file_type: file.type,
-					file_url: urlData.publicUrl,
-					supabase_path: fileName,
-					upload_date: new Date().toISOString(),
-					file_id: Date.now()
+					id: Date.now(),                     // Using 'id' as primary key
+					tabId: currentEditingTab,           // Using 'tabId' for tab reference
+					name: file.name,                    // Using 'name' for file name
+					size: file.size,                    // Using 'size' for file size
+					type: file.type,                    // Using 'type' for file type
+					url: urlData.publicUrl,             // Using 'url' for file URL
+					supabasePath: fileName,             // Using 'supabasePath' for storage path
+					uploadDate: new Date().toISOString() // Using 'uploadDate' with timestamp
 				}]);
 			
 			if (dbError) {
@@ -2358,7 +2472,7 @@
 					const { data: files, error } = await supabase
 						.from('uploaded_files')
 						.select('*')
-						.order('created_at', { ascending: false });
+						.order('uploadDate', { ascending: false }); // Using 'uploadDate' column
 					
 					if (error) {
 						console.error('❌ Error loading files from database:', error);
@@ -2373,18 +2487,18 @@
 					if (files && files.length > 0) {
 						files.forEach(fileRecord => {
 							const fileData = {
-								name: fileRecord.file_name,
-								size: fileRecord.file_size,
-								type: fileRecord.file_type,
-								data: fileRecord.file_url,
-								uploadDate: new Date(fileRecord.upload_date).toLocaleDateString(),
-								id: fileRecord.file_id,
-								supabasePath: fileRecord.supabase_path,
+								name: fileRecord.name,              // Using 'name' column
+								size: fileRecord.size,              // Using 'size' column
+								type: fileRecord.type,              // Using 'type' column
+								data: fileRecord.url,               // Using 'url' column
+								uploadDate: new Date(fileRecord.uploadDate).toLocaleDateString(), // Using 'uploadDate'
+								id: fileRecord.id,                  // Using 'id' column
+								supabasePath: fileRecord.supabasePath, // Using 'supabasePath'
 								isSupabaseFile: true
 							};
 							
-							console.log('📄 Loading file:', fileData.name, 'in tab:', fileRecord.tab_name);
-							showFileInTab(fileRecord.tab_name, fileData);
+							console.log('📄 Loading file:', fileData.name, 'in tab:', fileRecord.tabId);
+							showFileInTab(fileRecord.tabId, fileData); // Using 'tabId' column
 						});
 					} else {
 						console.log('📭 No files found in database');
@@ -2437,7 +2551,7 @@
 					const { data: fileRecord, error: fetchError } = await supabase
 						.from('uploaded_files')
 						.select('*')
-						.eq('file_id', fileId)
+						.eq('id', fileId)  // Using 'id' instead of 'file_id'
 						.single();
 					
 					if (fetchError) {
@@ -2447,15 +2561,15 @@
 					
 					if (fileRecord) {
 						// Delete from Supabase storage
-						if (fileRecord.supabase_path) {
+						if (fileRecord.supabasePath) {  // Using 'supabasePath' instead of 'supabasepath'
 							const { error: storageError } = await supabase.storage
 								.from('investor-files')
-								.remove([fileRecord.supabase_path]);
+								.remove([fileRecord.supabasePath]);
 							
 							if (storageError) {
 								console.error('Supabase storage deletion error:', storageError);
 							} else {
-								console.log('✅ File deleted from Supabase storage:', fileRecord.supabase_path);
+								console.log('✅ File deleted from Supabase storage:', fileRecord.supabasePath);
 							}
 						}
 						
@@ -2463,14 +2577,14 @@
 						const { error: dbError } = await supabase
 							.from('uploaded_files')
 							.delete()
-							.eq('file_id', fileId);
+							.eq('id', fileId);  // Using 'id' instead of 'file_id'
 						
 						if (dbError) {
 							console.error('Database deletion error:', dbError);
 							return;
 						}
 						
-						console.log('✅ File deleted from database:', fileRecord.file_name);
+						console.log('✅ File deleted from database:', fileRecord.name); // Using 'name' instead of 'file_name'
 					}
 				}
 				
@@ -3118,33 +3232,90 @@
 				addAdminLoginButton();
 				addAdminButtons();
 				loadSavedTabs(); // Load custom tabs first
-				checkAdminLogin(); // This will call loadUploadedFiles() 
+				loadUploadedFiles(); // Load files for everyone (not just admin)
+				checkAdminLogin(); // Check admin status separately
+				
+				// Add status indicator
+				addStatusIndicator();
 			}, 1500); // Increased delay to ensure Supabase is ready
 			
 			// Add test button for debugging
 			const testBtn = document.createElement('button');
-			testBtn.innerHTML = '🧪 Test Admin';
+			testBtn.innerHTML = '🧪 Test Supabase';
 			testBtn.style.cssText = `
 				position: fixed;
 				top: 20px;
 				right: 20px;
-				background: #27ae60;
+				z-index: 10000;
+				padding: 10px;
+				background: #4CAF50;
 				color: white;
 				border: none;
-				padding: 12px 18px;
-				border-radius: 8px;
+				border-radius: 5px;
 				cursor: pointer;
-				z-index: 10000;
-				font-weight: bold;
+				font-size: 12px;
 			`;
-			testBtn.onclick = function() {
-				console.log('🧪 Test button clicked');
-				console.log('isLoggedIn:', isLoggedIn);
-				console.log('sessionStorage adminLoggedIn:', sessionStorage.getItem('adminLoggedIn'));
-				console.log('Admin icons:', document.querySelectorAll('.admin-edit-icon').length);
-				adminLogin(); // Direct login test
+			testBtn.onclick = async () => {
+				console.log('🧪 Testing Supabase connection...');
+				if (supabase) {
+					try {
+						const { data, error } = await supabase
+							.from('uploaded_files')
+							.select('*')
+							.limit(5);
+						
+						if (error) {
+							console.error('❌ Supabase error:', error);
+							alert('❌ Supabase Error: ' + error.message);
+						} else {
+							console.log('✅ Supabase connection successful:', data);
+							alert(`✅ Supabase Connected! Found ${data.length} files`);
+						}
+					} catch (err) {
+						console.error('❌ Connection error:', err);
+						alert('❌ Connection Error: ' + err.message);
+					}
+				} else {
+					alert('❌ Supabase not initialized');
+				}
 			};
 			document.body.appendChild(testBtn);
+			
+			// Add status indicator for Supabase connection
+			function addStatusIndicator() {
+				const statusDiv = document.createElement('div');
+				statusDiv.id = 'supabaseStatus';
+				statusDiv.style.cssText = `
+					position: fixed;
+					bottom: 20px;
+					right: 20px;
+					padding: 8px 12px;
+					border-radius: 20px;
+					font-size: 12px;
+					font-weight: bold;
+					z-index: 10000;
+					transition: all 0.3s ease;
+				`;
+				
+				if (supabase) {
+					statusDiv.style.background = '#4CAF50';
+					statusDiv.style.color = 'white';
+					statusDiv.textContent = '🟢 Database Connected';
+				} else {
+					statusDiv.style.background = '#ff4444';
+					statusDiv.style.color = 'white';
+					statusDiv.textContent = '🔴 Database Offline';
+				}
+				
+				document.body.appendChild(statusDiv);
+				
+				// Auto-hide after 5 seconds
+				setTimeout(() => {
+					if (statusDiv.parentNode) {
+						statusDiv.style.opacity = '0.3';
+					}
+				}, 5000);
+			}
 			
 			// Secret admin access: Ctrl+Shift+A
 			document.addEventListener('keydown', function(e) {
