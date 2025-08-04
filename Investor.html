@@ -2245,10 +2245,10 @@
 					size: file.size,
 					type: file.type,
 					url: urlData.publicUrl,
-					uploadDate: new Date().toISOString(),
+					uploaddate: new Date().toISOString(),
 					id: Date.now(),
-					supabasePath: fileName,
-					tabId: currentEditingTab
+					supabasepath: fileName,
+					tabid: currentEditingTab
 				};
 				
 				// Save ONLY to Supabase database (NO localStorage)
@@ -2451,16 +2451,19 @@
 					if (files && files.length > 0) {
 						// Convert Supabase data to the expected format
 						files.forEach(fileData => {
-							if (!allFiles[fileData.tab_id || fileData.tabId]) {
-								allFiles[fileData.tab_id || fileData.tabId] = [];
+							// Use the correct database field names (snake_case)
+							const tabId = fileData.tabid || fileData.tab_id || fileData.tabId;
+							if (!allFiles[tabId]) {
+								allFiles[tabId] = [];
 							}
 							// Ensure the file has the correct URL property
 							const processedFile = {
 								...fileData,
 								data: fileData.url || fileData.data,
+								tabId: tabId, // Ensure we have tabId in camelCase for display
 								isSupabaseFile: true
 							};
-							allFiles[fileData.tab_id || fileData.tabId].push(processedFile);
+							allFiles[tabId].push(processedFile);
 						});
 						
 						// Display all loaded files
@@ -2532,10 +2535,10 @@
 				
 				if (fileData) {
 					// Delete from Supabase storage
-					if (fileData.supabase_path || fileData.supabasePath) {
+					if (fileData.supabasepath || fileData.supabase_path || fileData.supabasePath) {
 						const { error: storageError } = await supabase.storage
 							.from('investor-files')
-							.remove([fileData.supabase_path || fileData.supabasePath]);
+							.remove([fileData.supabasepath || fileData.supabase_path || fileData.supabasePath]);
 						
 						if (storageError) {
 							console.error('Supabase storage deletion error:', storageError);
