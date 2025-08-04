@@ -1779,41 +1779,11 @@
 		const SUPABASE_URL = 'https://slsqmfbodwgvndjcjjuj.supabase.co'; // e.g., 'https://your-project.supabase.co'
 		const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsc3FtZmJvZHdndm5kamNqanVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwNTIzNjAsImV4cCI6MjA2OTYyODM2MH0.dWNUlMuR_T_AKJ4IK4ihz6u--3K8dJzy5DVu29ti90w'; // Your anon public key
 		
-		/*
-		REQUIRED: Create this table in your Supabase database:
-		
-		CREATE TABLE uploaded_files (
-			id BIGINT PRIMARY KEY,
-			name TEXT NOT NULL,
-			size BIGINT,
-			type TEXT,
-			url TEXT NOT NULL,
-			uploadDate TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-			supabasePath TEXT,
-			tabId TEXT NOT NULL
-		);
-		
-		-- Enable Row Level Security
-		ALTER TABLE uploaded_files ENABLE ROW LEVEL SECURITY;
-		
-		-- Policy to allow public read access (so everyone can see files)
-		CREATE POLICY "Allow public read access" ON uploaded_files FOR SELECT USING (true);
-		
-		-- Policy to allow authenticated users to insert files (for admin uploads)
-		CREATE POLICY "Allow public insert" ON uploaded_files FOR INSERT WITH CHECK (true);
-		
-		-- Policy to allow authenticated users to delete files (for admin delete)
-		CREATE POLICY "Allow public delete" ON uploaded_files FOR DELETE USING (true);
-		*/
-		
 		// Initialize Supabase client
 		let supabase = null;
 		if (SUPABASE_URL !== 'YOUR_SUPABASE_URL_HERE' && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY_HERE') {
 			supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 			console.log('✅ Supabase initialized successfully');
-			
-			// Simple storage initialization
-			initializeSupabaseStorage();
 		} else {
 			console.log('⚠️ Please update Supabase credentials in the code');
 		}
@@ -2072,7 +2042,7 @@
 			modal.innerHTML = `
 				<div style="background: white; padding: 25px; border-radius: 12px; max-width: 400px; width: 90%; box-shadow: 0 8px 25px rgba(0,0,0,0.2); animation: slideDown 0.3s ease;">
 					<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-						<h3 style="color: #2c3e50; margin: 0; font-size: 18px;">� Add File</h3>
+						<h3 style="color: #2c3e50; margin: 0; font-size: 18px;">  Add File</h3>
 						<span onclick="closeModal()" style="cursor: pointer; font-size: 24px; color: #7f8c8d; font-weight: bold; line-height: 1;">&times;</span>
 					</div>
 					<form id="docForm">
@@ -2110,6 +2080,25 @@
 			};
 		}
 
+		// Create Supabase bucket if it doesn't exist
+		async function createBucketIfNotExists() {
+			try {
+				const { data, error } = await supabase.storage.createBucket('investor-files', {
+					public: true,
+					allowedMimeTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-powerpoint', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'text/plain', 'image/jpeg', 'image/png', 'image/jpg'],
+					fileSizeLimit: 50 * 1024 * 1024 // 50MB limit
+				});
+				
+				if (error && !error.message.includes('already exists')) {
+					console.error('Error creating bucket:', error);
+				} else {
+					console.log('✅ Bucket created or already exists');
+				}
+			} catch (error) {
+				console.error('Bucket creation error:', error);
+			}
+		}
+
 		// Add simple file function with Supabase integration
 		async function addSimpleFile() {
 			console.log('Starting file upload, currentEditingTab:', currentEditingTab);
@@ -2131,14 +2120,15 @@
 			
 			try {
 				if (supabase) {
-					// Upload to Supabase Storage ONLY
+					// Upload to Supabase Storage
 					await uploadToSupabase(file);
 				} else {
-					throw new Error('Supabase not available - files must be stored in cloud to be visible to everyone');
+					// Fallback to localStorage
+					await uploadToLocalStorage(file);
 				}
 				
 				closeModal();
-				alert(`✅ File "${file.name}" uploaded successfully and visible to everyone!`);
+				alert(`✅ File "${file.name}" uploaded successfully!`);
 				
 			} catch (error) {
 				console.error('Upload error:', error);
@@ -2150,107 +2140,70 @@
 			}
 		}
 		
-		// Note: localStorage functions removed - all files now stored in Supabase only
-		
 		// Upload to Supabase Storage
-		// Upload to Supabase Storage ONLY (NO localStorage)
 		async function uploadToSupabase(file) {
-			const fileName = `uploads/${currentEditingTab}/${Date.now()}_${file.name}`;
+			const fileName = `${currentEditingTab}/${Date.now()}_${file.name}`;
 			
-			try {
-				console.log('🔍 Attempting upload to bucket: investor-files');
-				console.log('📁 File name:', fileName);
-				
-				// First, test bucket accessibility and create if needed
-				let { data: buckets, error: listError } = await supabase.storage.listBuckets();
-				if (listError) {
-					throw new Error(`Cannot access storage: ${listError.message}`);
-				}
-				
-				console.log('📋 Available buckets:', buckets.map(b => b.name));
-				
-				let investorBucket = buckets.find(b => b.name === 'investor-files');
-				
-				// If bucket doesn't exist, create it
-				if (!investorBucket) {
-					console.log('📁 Creating investor-files bucket...');
-					const { data: newBucket, error: createError } = await supabase.storage.createBucket('investor-files', {
-						public: true,
-						allowedMimeTypes: ['application/pdf', 'image/*', 'text/*', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-						fileSizeLimit: 52428800 // 50MB
-					});
+			// Upload file to Supabase storage
+			const { data, error } = await supabase.storage
+				.from('investor-files')
+				.upload(fileName, file);
+			
+			if (error) {
+				// If bucket doesn't exist, create it and try again
+				if (error.message.includes('not found')) {
+					await createBucketIfNotExists();
+					const { data: retryData, error: retryError } = await supabase.storage
+						.from('investor-files')
+						.upload(fileName, file);
 					
-					if (createError) {
-						throw new Error(`Failed to create bucket: ${createError.message}`);
+					if (retryError) {
+						throw new Error(`Supabase upload failed: ${retryError.message}`);
 					}
-					
-					console.log('✅ investor-files bucket created successfully');
-					
-					// Refresh bucket list
-					const { data: refreshedBuckets } = await supabase.storage.listBuckets();
-					buckets = refreshedBuckets;
-					investorBucket = buckets.find(b => b.name === 'investor-files');
-				}
-				
-				if (!investorBucket) {
-					throw new Error('investor-files bucket still not found after creation attempt');
-				}
-				
-				console.log('✅ investor-files bucket confirmed, attempting upload...');
-				
-				// Upload file to Supabase storage
-				const { data, error } = await supabase.storage
-					.from('investor-files')
-					.upload(fileName, file, {
-						cacheControl: '3600',
-						upsert: false
-					});
-				
-				if (error) {
-					throw new Error(`Upload failed: ${error.message}`);
-				}
-				
-				console.log('📤 Upload successful:', data);
-				
-				// Get public URL
-				const { data: urlData } = supabase.storage
-					.from('investor-files')
-					.getPublicUrl(fileName);
-				
-				console.log('🔗 Public URL generated:', urlData.publicUrl);
-				
-				const fileData = {
-					name: file.name,
-					size: file.size,
-					type: file.type,
-					url: urlData.publicUrl,
-					uploadDate: new Date().toISOString(),
-					id: Date.now(),
-					supabasePath: fileName,
-					tabId: currentEditingTab
-				};
-				
-				// Save ONLY to Supabase database (NO localStorage)
-				const { error: dbError } = await supabase
-					.from('uploaded_files')
-					.insert([fileData]);
-				
-				if (dbError) {
-					console.warn('Database save failed, but file uploaded to storage:', dbError.message);
-					// Still show the file even if database save fails
 				} else {
-					console.log('💾 File saved to database successfully');
+					throw new Error(`Supabase upload failed: ${error.message}`);
 				}
-				
-				// Show file immediately in current tab
-				showFileInTab(currentEditingTab, fileData);
-				
-				console.log('✅ File uploaded to Supabase successfully:', fileName);
-				
-			} catch (error) {
-				console.error('❌ Supabase upload failed:', error.message);
-				throw error;
 			}
+			
+			// Get public URL
+			const { data: urlData } = supabase.storage
+				.from('investor-files')
+				.getPublicUrl(fileName);
+			
+			const fileData = {
+				name: file.name,
+				size: file.size,
+				type: file.type,
+				data: urlData.publicUrl, // Use Supabase URL instead of base64
+				uploadDate: new Date().toLocaleDateString(),
+				id: Date.now(),
+				supabasePath: fileName,
+				isSupabaseFile: true
+			};
+			
+			// Save metadata to Supabase database (NOT localStorage)
+			const { data: dbData, error: dbError } = await supabase
+				.from('uploaded_files')
+				.insert([{
+					tab_name: currentEditingTab,
+					file_name: file.name,
+					file_size: file.size,
+					file_type: file.type,
+					file_url: urlData.publicUrl,
+					supabase_path: fileName,
+					upload_date: new Date().toISOString(),
+					file_id: Date.now()
+				}]);
+			
+			if (dbError) {
+				console.error('Database save error:', dbError);
+				// Don't throw error - file is still uploaded to storage
+			}
+			
+			// Show file immediately in current tab
+			showFileInTab(currentEditingTab, fileData);
+			
+			console.log('✅ File uploaded to Supabase and database:', fileName);
 		}
 		
 		// Fallback: Upload to localStorage (existing method)
@@ -2337,9 +2290,8 @@
 		function showFileInParagraph(paragraph, fileData, publicTabId) {
 			// Create file link - RED text normally, BLACK text with RED underline on hover
 			const fileLink = document.createElement('a');
-			fileLink.href = fileData.url || fileData.data; // Use 'url' for Supabase files, 'data' for legacy
+			fileLink.href = fileData.data;
 			fileLink.download = fileData.name;
-			fileLink.target = '_blank'; // Open in new tab for better user experience
 			fileLink.style.cssText = `
 				color: #dc3545;
 				text-decoration: none;
@@ -2424,63 +2376,62 @@
 			}
 		}
 
-		// Load all uploaded files on page load
-		// Load all uploaded files ONLY from Supabase database (NO localStorage)
+		// Load all uploaded files on page load from Supabase database
 		async function loadUploadedFiles() {
 			// Clear existing uploaded files and their line breaks
 			document.querySelectorAll('.uploaded-file, .uploaded-file-link, .uploaded-file-br').forEach(el => el.remove());
 			
-			let allFiles = {};
-			
-			// Load ONLY from Supabase database
-			if (supabase) {
-				try {
-					const { data, error } = await supabase
+			try {
+				if (supabase) {
+					// Load from Supabase database
+					const { data: files, error } = await supabase
 						.from('uploaded_files')
 						.select('*')
-						.order('id', { ascending: true });
+						.order('created_at', { ascending: false });
 					
 					if (error) {
-						console.error('Supabase database error:', error.message);
-						// Show user that files need to be uploaded to Supabase
-						console.log('📋 No files found in Supabase database. Files will be visible to everyone once uploaded.');
+						console.error('Error loading files from database:', error);
 						return;
 					}
 					
-					if (data && data.length > 0) {
-						// Group files by tab
-						data.forEach(fileData => {
-							const tabId = fileData.tabId || fileData.tab_id;
-							if (!allFiles[tabId]) {
-								allFiles[tabId] = [];
-							}
-							allFiles[tabId].push(fileData);
+					console.log('Loading files from Supabase database:', files);
+					
+					if (files && files.length > 0) {
+						files.forEach(fileRecord => {
+							const fileData = {
+								name: fileRecord.file_name,
+								size: fileRecord.file_size,
+								type: fileRecord.file_type,
+								data: fileRecord.file_url,
+								uploadDate: new Date(fileRecord.upload_date).toLocaleDateString(),
+								id: fileRecord.file_id,
+								supabasePath: fileRecord.supabase_path,
+								isSupabaseFile: true
+							};
+							
+							console.log('Loading file:', fileData.name, 'in tab:', fileRecord.tab_name);
+							showFileInTab(fileRecord.tab_name, fileData);
 						});
-						console.log('✅ Files loaded from Supabase database (visible to everyone):', allFiles);
-					} else {
-						console.log('📋 No files found in Supabase database yet');
-						return;
 					}
-				} catch (error) {
-					console.error('Error loading from Supabase database:', error.message);
-					return;
-				}
-			} else {
-				console.warn('⚠️ Supabase not available - files cannot be loaded');
-				return;
-			}
-			
-			console.log('Loading files from Supabase:', allFiles);
-			console.log('Tab mappings:', tabMapping, reverseTabMapping);
-			
-			Object.keys(allFiles).forEach(adminTabId => {
-				console.log('Processing adminTabId:', adminTabId, 'files:', allFiles[adminTabId]);
-				if (allFiles[adminTabId] && allFiles[adminTabId].length > 0) {
-					allFiles[adminTabId].forEach(fileData => {
-						showFileInTab(adminTabId, fileData);
+				} else {
+					console.log('Supabase not available, loading from localStorage');
+					// Fallback to localStorage
+					const allFiles = JSON.parse(localStorage.getItem('uploadedFiles') || '{}');
+					console.log('Loading files from localStorage:', allFiles);
+					
+					Object.keys(allFiles).forEach(adminTabId => {
+						console.log('Processing adminTabId:', adminTabId, 'files:', allFiles[adminTabId]);
+						if (allFiles[adminTabId] && allFiles[adminTabId].length > 0) {
+							allFiles[adminTabId].forEach(fileData => {
+								console.log('Loading file:', fileData.name, 'in tab:', adminTabId);
+								showFileInTab(adminTabId, fileData);
+							});
+						}
 					});
 				}
-			});
+			} catch (error) {
+				console.error('Error in loadUploadedFiles:', error);
+			}
 		}
 
 		// Clear all uploaded files memory (for complete cleanup)
@@ -2509,55 +2460,47 @@
 			console.log('All file memory cleared');
 		}
 
-		// Delete uploaded file from Supabase ONLY (NO localStorage)
+		// Delete uploaded file (Instant deletion without confirmation)
 		async function deleteUploadedFile(fileId, publicTabId) {
 			if (!isLoggedIn) return;
 			
-			if (!supabase) {
-				alert('❌ Cannot delete: Supabase not available');
-				return;
-			}
+			// Instant deletion without confirmation
+			const adminTabId = reverseTabMapping[publicTabId];
+			let allFiles = JSON.parse(localStorage.getItem('uploadedFiles') || '{}');
 			
-			try {
-				// Get file info from Supabase database first
-				const { data: fileData, error: fetchError } = await supabase
-					.from('uploaded_files')
-					.select('*')
-					.eq('id', fileId)
-					.single();
+			if (allFiles[adminTabId]) {
+				// Find the file to delete
+				const fileToDelete = allFiles[adminTabId].find(file => file.id == fileId);
 				
-				if (fetchError) {
-					console.error('Error fetching file for deletion:', fetchError.message);
-					return;
-				}
-				
-				if (fileData) {
-					// Delete from Supabase storage
-					if (fileData.supabasePath) {
-						const { error: storageError } = await supabase.storage
-							.from('investor-files')
-							.remove([fileData.supabasePath]);
-						
-						if (storageError) {
-							console.warn('Storage deletion error:', storageError.message);
-						} else {
-							console.log('✅ File deleted from Supabase storage');
+				if (fileToDelete) {
+					// Delete from Supabase if it's a Supabase file
+					if (fileToDelete.isSupabaseFile && fileToDelete.supabasePath && supabase) {
+						try {
+							const { error } = await supabase.storage
+								.from('investor-files')
+								.remove([fileToDelete.supabasePath]);
+							
+							if (error) {
+								console.error('Supabase deletion error:', error);
+							} else {
+								console.log('✅ File deleted from Supabase:', fileToDelete.supabasePath);
+							}
+						} catch (error) {
+							console.error('Error deleting from Supabase:', error);
+						}
+					} else if (fileToDelete.data && fileToDelete.data.startsWith('data:')) {
+						// Revoke the blob URL to free memory (for localStorage files)
+						try {
+							URL.revokeObjectURL(fileToDelete.data);
+						} catch (e) {
+							console.log('Memory cleanup attempt completed');
 						}
 					}
-					
-					// Delete from Supabase database
-					const { error: dbError } = await supabase
-						.from('uploaded_files')
-						.delete()
-						.eq('id', fileId);
-					
-					if (dbError) {
-						console.error('Database deletion error:', dbError.message);
-						return;
-					} else {
-						console.log('✅ File deleted from Supabase database');
-					}
 				}
+				
+				// Remove from localStorage
+				allFiles[adminTabId] = allFiles[adminTabId].filter(file => file.id != fileId);
+				localStorage.setItem('uploadedFiles', JSON.stringify(allFiles));
 				
 				// Instantly remove all elements related to this file from display
 				const tabContent = document.querySelector(`[data-id="${publicTabId}"]`);
@@ -2581,11 +2524,7 @@
 				}
 				
 				// Silent deletion - no alerts or confirmations
-				console.log(`File ${fileId} deleted instantly from Supabase`);
-				
-			} catch (error) {
-				console.error('Error deleting file:', error.message);
-				alert('❌ Error deleting file. Please try again.');
+				console.log(`File ${fileId} deleted instantly with complete cleanup`);
 			}
 		}
 
