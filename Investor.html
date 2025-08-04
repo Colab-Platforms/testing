@@ -1852,20 +1852,36 @@
 
 		// Admin login function
 		async function adminLogin() {
-			const email = prompt('Admin Email:');
+			console.log('🔐 Admin login function called');
+			
+			const email = prompt('Admin Email:', 'admin@empowerindia.com');
 			const password = prompt('Admin Password:');
 			
+			console.log('Email entered:', email);
+			console.log('Expected email:', ADMIN_CREDENTIALS.email);
+			console.log('Password match:', password === ADMIN_CREDENTIALS.password);
+			
 			if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
+				console.log('✅ Admin credentials verified');
+				
 				isLoggedIn = true;
 				
 				// Store admin session in sessionStorage (reliable and simple)
 				sessionStorage.setItem('adminLoggedIn', 'true');
+				console.log('✅ Admin session stored');
+				
+				// Hide the login button
+				const loginBtn = document.getElementById('adminLoginBtn');
+				if (loginBtn) {
+					loginBtn.style.display = 'none';
+				}
 				
 				showAdminControls();
-				alert('✅ Admin login successful!');
+				alert('✅ Admin login successful! Upload buttons (📤) are now visible next to tab names.');
 				loadUploadedFiles();
 			} else {
-				alert('❌ Invalid credentials!');
+				console.log('❌ Invalid credentials provided');
+				alert('❌ Invalid credentials! Please use:\nEmail: admin@empowerindia.com\nPassword: admin123');
 			}
 		}
 
@@ -3079,17 +3095,20 @@
 					position: fixed;
 					top: 20px;
 					left: 20px;
-					background: #3498db;
+					background: #e74c3c;
 					color: white;
 					border: none;
-					padding: 10px 15px;
-					border-radius: 6px;
+					padding: 12px 18px;
+					border-radius: 8px;
 					cursor: pointer;
 					z-index: 10000;
 					font-weight: bold;
+					font-size: 14px;
+					box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 				`;
 				loginBtn.onclick = adminLogin;
 				document.body.appendChild(loginBtn);
+				console.log('✅ Admin login button added to page');
 			}
 		}
 
@@ -3101,6 +3120,31 @@
 				loadSavedTabs(); // Load custom tabs first
 				checkAdminLogin(); // This will call loadUploadedFiles() 
 			}, 1500); // Increased delay to ensure Supabase is ready
+			
+			// Add test button for debugging
+			const testBtn = document.createElement('button');
+			testBtn.innerHTML = '🧪 Test Admin';
+			testBtn.style.cssText = `
+				position: fixed;
+				top: 20px;
+				right: 20px;
+				background: #27ae60;
+				color: white;
+				border: none;
+				padding: 12px 18px;
+				border-radius: 8px;
+				cursor: pointer;
+				z-index: 10000;
+				font-weight: bold;
+			`;
+			testBtn.onclick = function() {
+				console.log('🧪 Test button clicked');
+				console.log('isLoggedIn:', isLoggedIn);
+				console.log('sessionStorage adminLoggedIn:', sessionStorage.getItem('adminLoggedIn'));
+				console.log('Admin icons:', document.querySelectorAll('.admin-edit-icon').length);
+				adminLogin(); // Direct login test
+			};
+			document.body.appendChild(testBtn);
 			
 			// Secret admin access: Ctrl+Shift+A
 			document.addEventListener('keydown', function(e) {
