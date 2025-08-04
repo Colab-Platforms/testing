@@ -1819,17 +1819,26 @@
 		);
 
 		// Check admin login on page load
-		function checkAdminLogin() {
+		async function checkAdminLogin() {
+			console.log('🔐 checkAdminLogin() called');
+			
 			const storedLogin = localStorage.getItem('adminLoggedIn');
+			
 			if (storedLogin === 'true') {
 				isLoggedIn = true;
+				console.log('✅ Admin logged in, showing controls');
 				showAdminControls();
-				loadUploadedFiles(); // Load uploaded files
 			} else {
+				console.log('👤 Regular user, hiding admin controls');
 				// Hide admin login button from regular users
 				hideAdminLoginButton();
-				loadUploadedFiles(); // Still load files for viewing
 			}
+			
+			// Always load uploaded files (for both admin and regular users)
+			// Add small delay to ensure Supabase is ready
+			setTimeout(async () => {
+				await loadUploadedFiles();
+			}, 500);
 		}
 		
 		// Hide admin login button
@@ -2316,11 +2325,15 @@
 
 		// Load all uploaded files on page load from Supabase database
 		async function loadUploadedFiles() {
+			console.log('🔄 loadUploadedFiles() called, Supabase available:', !!supabase);
+			
 			// Clear existing uploaded files and their line breaks
 			document.querySelectorAll('.uploaded-file, .uploaded-file-link, .uploaded-file-br').forEach(el => el.remove());
 			
 			try {
 				if (supabase) {
+					console.log('📡 Loading files from Supabase database...');
+					
 					// Load from Supabase database
 					const { data: files, error } = await supabase
 						.from('uploaded_files')
@@ -2328,11 +2341,13 @@
 						.order('created_at', { ascending: false });
 					
 					if (error) {
-						console.error('Error loading files from database:', error);
+						console.error('❌ Error loading files from database:', error);
+						console.log('📁 Trying localStorage fallback...');
+						loadFromLocalStorageFallback();
 						return;
 					}
 					
-					console.log('Loading files from Supabase database:', files);
+					console.log('✅ Files loaded from Supabase database:', files?.length || 0, 'files');
 					
 					if (files && files.length > 0) {
 						files.forEach(fileRecord => {
@@ -2347,28 +2362,40 @@
 								isSupabaseFile: true
 							};
 							
-							console.log('Loading file:', fileData.name, 'in tab:', fileRecord.tab_name);
+							console.log('📄 Loading file:', fileData.name, 'in tab:', fileRecord.tab_name);
 							showFileInTab(fileRecord.tab_name, fileData);
 						});
+					} else {
+						console.log('📭 No files found in database');
 					}
 				} else {
-					console.log('Supabase not available, loading from localStorage');
-					// Fallback to localStorage
-					const allFiles = JSON.parse(localStorage.getItem('uploadedFiles') || '{}');
-					console.log('Loading files from localStorage:', allFiles);
-					
-					Object.keys(allFiles).forEach(adminTabId => {
-						console.log('Processing adminTabId:', adminTabId, 'files:', allFiles[adminTabId]);
-						if (allFiles[adminTabId] && allFiles[adminTabId].length > 0) {
-							allFiles[adminTabId].forEach(fileData => {
-								console.log('Loading file:', fileData.name, 'in tab:', adminTabId);
-								showFileInTab(adminTabId, fileData);
-							});
-						}
-					});
+					console.log('⚠️ Supabase not available, using localStorage fallback');
+					loadFromLocalStorageFallback();
 				}
 			} catch (error) {
-				console.error('Error in loadUploadedFiles:', error);
+				console.error('❌ Error in loadUploadedFiles:', error);
+				console.log('📁 Trying localStorage fallback...');
+				loadFromLocalStorageFallback();
+			}
+		}
+		
+		// Fallback function to load from localStorage
+		function loadFromLocalStorageFallback() {
+			try {
+				const allFiles = JSON.parse(localStorage.getItem('uploadedFiles') || '{}');
+				console.log('Loading files from localStorage fallback:', allFiles);
+				
+				Object.keys(allFiles).forEach(adminTabId => {
+					console.log('Processing adminTabId:', adminTabId, 'files:', allFiles[adminTabId]);
+					if (allFiles[adminTabId] && allFiles[adminTabId].length > 0) {
+						allFiles[adminTabId].forEach(fileData => {
+							console.log('Loading file:', fileData.name, 'in tab:', adminTabId);
+							showFileInTab(adminTabId, fileData);
+						});
+					}
+				});
+			} catch (error) {
+				console.error('Error in localStorage fallback:', error);
 			}
 		}
 
@@ -3089,10 +3116,9 @@
 			setTimeout(() => {
 				addAdminLoginButton();
 				addAdminButtons();
-				checkAdminLogin();
 				loadSavedTabs(); // Load custom tabs first
-				loadUploadedFiles(); // Then load uploaded files
-			}, 1000); // Delay to ensure DOM is fully loaded
+				checkAdminLogin(); // This will call loadUploadedFiles() 
+			}, 1500); // Increased delay to ensure Supabase is ready
 			
 			// Secret admin access: Ctrl+Shift+A
 			document.addEventListener('keydown', function(e) {
