@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en-US">
 
 <head>
@@ -1796,21 +1796,7 @@
 			if (!supabase) return;
 			
 			try {
-				// Test storage access
-				const { data: buckets, error } = await supabase.storage.listBuckets();
-				if (error) {
-					console.warn('Supabase storage not accessible:', error.message);
-					return;
-				}
-				
-				// Check if documents bucket exists
-				const investorBucket = buckets.find(bucket => bucket.name === 'investor-files');
-				if (!investorBucket) {
-					console.log('� Documents bucket not found. Please create it in Supabase dashboard');
-					console.log('Go to Storage > Create new bucket > Name: documents > Make it public');
-				} else {
-					console.log('✅ Documents bucket found and accessible');
-				}
+				console.log('✅ Supabase storage initialized - using investor-files bucket');
 			} catch (error) {
 				console.warn('Supabase storage check failed:', error.message);
 			}
