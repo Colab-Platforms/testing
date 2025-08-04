@@ -127,12 +127,12 @@
 
         // Initialize page
         document.addEventListener('DOMContentLoaded', function() {
-            // Check if already logged in
-            const storedLogin = localStorage.getItem('adminLoggedIn');
-            if (storedLogin === 'true') {
-                // Already logged in, redirect to investor page
-                redirectToInvestorPage();
-            }
+            // Always show login form - don't auto-redirect
+            // Clear any existing login status when accessing admin page directly
+            localStorage.removeItem('adminLoggedIn');
+            
+            // Focus on email field
+            document.getElementById('adminEmail').focus();
         });
 
         // Admin Login Form Handler
@@ -150,9 +150,10 @@
             
             // Validate credentials
             if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
-                // Success
+                // Success - Set admin login status and admin mode
                 localStorage.setItem('adminLoggedIn', 'true');
-                successDiv.textContent = '✅ Login successful! Redirecting to investor page...';
+                localStorage.setItem('adminMode', 'true'); // Add admin mode flag
+                successDiv.textContent = '✅ Login successful! Redirecting to investor page with admin controls...';
                 
                 // Redirect after 1.5 seconds
                 setTimeout(() => {
