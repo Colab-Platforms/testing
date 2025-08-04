@@ -1779,6 +1779,33 @@
 		const SUPABASE_URL = 'https://slsqmfbodwgvndjcjjuj.supabase.co'; // e.g., 'https://your-project.supabase.co'
 		const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNsc3FtZmJvZHdndm5kamNqanVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQwNTIzNjAsImV4cCI6MjA2OTYyODM2MH0.dWNUlMuR_T_AKJ4IK4ihz6u--3K8dJzy5DVu29ti90w'; // Your anon public key
 		
+		/*
+		REQUIRED: Create this table in your Supabase database:
+		
+		CREATE TABLE uploaded_files (
+			id BIGINT PRIMARY KEY,
+			name TEXT NOT NULL,
+			size BIGINT,
+			type TEXT,
+			url TEXT NOT NULL,
+			uploadDate TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+			supabasePath TEXT,
+			tabId TEXT NOT NULL
+		);
+		
+		-- Enable Row Level Security
+		ALTER TABLE uploaded_files ENABLE ROW LEVEL SECURITY;
+		
+		-- Policy to allow public read access (so everyone can see files)
+		CREATE POLICY "Allow public read access" ON uploaded_files FOR SELECT USING (true);
+		
+		-- Policy to allow authenticated users to insert files (for admin uploads)
+		CREATE POLICY "Allow public insert" ON uploaded_files FOR INSERT WITH CHECK (true);
+		
+		-- Policy to allow authenticated users to delete files (for admin delete)
+		CREATE POLICY "Allow public delete" ON uploaded_files FOR DELETE USING (true);
+		*/
+		
 		// Initialize Supabase client
 		let supabase = null;
 		if (SUPABASE_URL !== 'YOUR_SUPABASE_URL_HERE' && SUPABASE_ANON_KEY !== 'YOUR_SUPABASE_ANON_KEY_HERE') {
@@ -1789,31 +1816,6 @@
 			initializeSupabaseStorage();
 		} else {
 			console.log('⚠️ Please update Supabase credentials in the code');
-		}
-
-		// Simple storage initialization
-		async function initializeSupabaseStorage() {
-			if (!supabase) return;
-			
-			try {
-				// Test storage access
-				const { data: buckets, error } = await supabase.storage.listBuckets();
-				if (error) {
-					console.warn('Supabase storage not accessible:', error.message);
-					return;
-				}
-				
-				// Check if documents bucket exists
-				const investorBucket = buckets.find(bucket => bucket.name === 'investor-files');
-				if (!investorBucket) {
-					console.log('� Documents bucket not found. Please create it in Supabase dashboard');
-					console.log('Go to Storage > Create new bucket > Name: documents > Make it public');
-				} else {
-					console.log('✅ Documents bucket found and accessible');
-				}
-			} catch (error) {
-				console.warn('Supabase storage check failed:', error.message);
-			}
 		}
 
 		let isLoggedIn = false;
@@ -2148,6 +2150,9 @@
 			}
 		}
 		
+		// Note: localStorage functions removed - all files now stored in Supabase only
+		
+		// Upload to Supabase Storage
 		// Upload to Supabase Storage ONLY (NO localStorage)
 		async function uploadToSupabase(file) {
 			const fileName = `uploads/${currentEditingTab}/${Date.now()}_${file.name}`;
@@ -2248,8 +2253,49 @@
 			}
 		}
 		
-		// Note: localStorage functions removed - all files now stored in Supabase only
-		
+		// Fallback: Upload to localStorage (existing method)
+		async function uploadToLocalStorage(file) {
+			return new Promise((resolve, reject) => {
+				const reader = new FileReader();
+				
+				reader.onload = function(e) {
+					const fileData = {
+						name: file.name,
+						size: file.size,
+						type: file.type,
+						data: e.target.result,
+						uploadDate: new Date().toLocaleDateString(),
+						id: Date.now(),
+						isSupabaseFile: false
+					};
+					
+					console.log('File read complete:', fileData.name, 'Data length:', fileData.data.length);
+					
+					// Save to localStorage
+					let allFiles = JSON.parse(localStorage.getItem('uploadedFiles') || '{}');
+					if (!allFiles[currentEditingTab]) {
+						allFiles[currentEditingTab] = [];
+					}
+					allFiles[currentEditingTab].push(fileData);
+					localStorage.setItem('uploadedFiles', JSON.stringify(allFiles));
+					
+					console.log('Saved to localStorage:', allFiles);
+					
+					// Show file immediately in current tab
+					showFileInTab(currentEditingTab, fileData);
+					
+					resolve();
+				};
+				
+				reader.onerror = function(e) {
+					console.error('File read error:', e);
+					reject(new Error('Error reading file'));
+				};
+				
+				reader.readAsDataURL(file);
+			});
+		}
+
 		// Show file in tab
 		function showFileInTab(adminTabId, fileData) {
 			const publicTabId = tabMapping[adminTabId];
@@ -2291,8 +2337,9 @@
 		function showFileInParagraph(paragraph, fileData, publicTabId) {
 			// Create file link - RED text normally, BLACK text with RED underline on hover
 			const fileLink = document.createElement('a');
-			fileLink.href = fileData.data;
+			fileLink.href = fileData.url || fileData.data; // Use 'url' for Supabase files, 'data' for legacy
 			fileLink.download = fileData.name;
+			fileLink.target = '_blank'; // Open in new tab for better user experience
 			fileLink.style.cssText = `
 				color: #dc3545;
 				text-decoration: none;
@@ -2377,6 +2424,7 @@
 			}
 		}
 
+		// Load all uploaded files on page load
 		// Load all uploaded files ONLY from Supabase database (NO localStorage)
 		async function loadUploadedFiles() {
 			// Clear existing uploaded files and their line breaks
@@ -2400,22 +2448,17 @@
 					}
 					
 					if (data && data.length > 0) {
-						// Convert Supabase data to the expected format
+						// Group files by tab
 						data.forEach(fileData => {
-							if (!allFiles[fileData.tab_id || fileData.tabId]) {
-								allFiles[fileData.tab_id || fileData.tabId] = [];
+							const tabId = fileData.tabId || fileData.tab_id;
+							if (!allFiles[tabId]) {
+								allFiles[tabId] = [];
 							}
-							// Ensure the file has the correct URL property
-							const processedFile = {
-								...fileData,
-								data: fileData.url || fileData.data,
-								isSupabaseFile: true
-							};
-							allFiles[fileData.tab_id || fileData.tabId].push(processedFile);
+							allFiles[tabId].push(fileData);
 						});
 						console.log('✅ Files loaded from Supabase database (visible to everyone):', allFiles);
 					} else {
-						console.log('📋 No files found in Supabase database yet.');
+						console.log('📋 No files found in Supabase database yet');
 						return;
 					}
 				} catch (error) {
@@ -2434,7 +2477,6 @@
 				console.log('Processing adminTabId:', adminTabId, 'files:', allFiles[adminTabId]);
 				if (allFiles[adminTabId] && allFiles[adminTabId].length > 0) {
 					allFiles[adminTabId].forEach(fileData => {
-						console.log('Loading file:', fileData.name, 'in tab:', adminTabId);
 						showFileInTab(adminTabId, fileData);
 					});
 				}
@@ -2491,13 +2533,13 @@
 				
 				if (fileData) {
 					// Delete from Supabase storage
-					if (fileData.supabase_path || fileData.supabasePath) {
+					if (fileData.supabasePath) {
 						const { error: storageError } = await supabase.storage
 							.from('investor-files')
-							.remove([fileData.supabase_path || fileData.supabasePath]);
+							.remove([fileData.supabasePath]);
 						
 						if (storageError) {
-							console.error('Supabase storage deletion error:', storageError);
+							console.warn('Storage deletion error:', storageError.message);
 						} else {
 							console.log('✅ File deleted from Supabase storage');
 						}
@@ -2510,7 +2552,7 @@
 						.eq('id', fileId);
 					
 					if (dbError) {
-						console.error('Supabase database deletion error:', dbError);
+						console.error('Database deletion error:', dbError.message);
 						return;
 					} else {
 						console.log('✅ File deleted from Supabase database');
