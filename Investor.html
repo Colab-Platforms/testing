@@ -2231,31 +2231,11 @@
 				
 				console.log('📋 Available buckets:', buckets.map(b => b.name));
 				
-				let investorBucket = buckets.find(b => b.name === 'investor-files');
+				const investorBucket = buckets.find(b => b.name === 'investor-files');
 				
-				// If bucket doesn't exist, create it
+				// Check if bucket exists (you created it manually)
 				if (!investorBucket) {
-					console.log('📁 Creating investor-files bucket...');
-					const { data: newBucket, error: createError } = await supabase.storage.createBucket('investor-files', {
-						public: true,
-						allowedMimeTypes: ['application/pdf', 'image/*', 'text/*', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-						fileSizeLimit: 52428800 // 50MB
-					});
-					
-					if (createError) {
-						throw new Error(`Failed to create bucket: ${createError.message}`);
-					}
-					
-					console.log('✅ investor-files bucket created successfully');
-					
-					// Refresh bucket list
-					const { data: refreshedBuckets } = await supabase.storage.listBuckets();
-					buckets = refreshedBuckets;
-					investorBucket = buckets.find(b => b.name === 'investor-files');
-				}
-				
-				if (!investorBucket) {
-					throw new Error('investor-files bucket still not found after creation attempt');
+					throw new Error('investor-files bucket not found. Please make sure you created the "investor-files" bucket in your Supabase dashboard and set it as public.');
 				}
 				
 				console.log('✅ investor-files bucket confirmed, attempting upload...');
@@ -2358,7 +2338,7 @@
 		function showFileInParagraph(paragraph, fileData, publicTabId) {
 			// Create file link - RED text normally, BLACK text with RED underline on hover
 			const fileLink = document.createElement('a');
-			fileLink.href = fileData.data;
+			fileLink.href = fileData.url || fileData.data; // Use 'url' first, fallback to 'data'
 			fileLink.download = fileData.name;
 			fileLink.style.cssText = `
 				color: #dc3545;
