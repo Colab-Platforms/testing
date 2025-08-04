@@ -2432,6 +2432,8 @@
 			// Clear existing uploaded files and their line breaks
 			document.querySelectorAll('.uploaded-file, .uploaded-file-link, .uploaded-file-br').forEach(el => el.remove());
 			
+			const allFiles = {}; // Store files organized by tab
+			
 			try {
 				if (supabase) {
 					console.log('📡 Loading files from Supabase database...');
@@ -2450,9 +2452,9 @@
 						return;
 					}
 					
-					if (data && data.length > 0) {
+					if (files && files.length > 0) {
 						// Convert Supabase data to the expected format
-						data.forEach(fileData => {
+						files.forEach(fileData => {
 							if (!allFiles[fileData.tab_id || fileData.tabId]) {
 								allFiles[fileData.tab_id || fileData.tabId] = [];
 							}
@@ -2463,6 +2465,16 @@
 								isSupabaseFile: true
 							};
 							allFiles[fileData.tab_id || fileData.tabId].push(processedFile);
+						});
+						
+						// Display all loaded files
+						console.log('📄 Displaying loaded files:', Object.keys(allFiles).length, 'tabs');
+						Object.keys(allFiles).forEach(tabId => {
+							const filesInTab = allFiles[tabId];
+							console.log(`Tab ${tabId}:`, filesInTab.length, 'files');
+							filesInTab.forEach(fileData => {
+								showFileInTab(tabId, fileData);
+							});
 						});
 					} else {
 						console.log('📭 No files found in database');
