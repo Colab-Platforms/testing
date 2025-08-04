@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en-US">
 
 <head>
@@ -2223,22 +2223,8 @@
 				console.log('🔍 Attempting upload to bucket: investor-files');
 				console.log('📁 File name:', fileName);
 				
-				// First, test bucket accessibility and create if needed
-				let { data: buckets, error: listError } = await supabase.storage.listBuckets();
-				if (listError) {
-					throw new Error(`Cannot access storage: ${listError.message}`);
-				}
-				
-				console.log('📋 Available buckets:', buckets.map(b => b.name));
-				
-				const investorBucket = buckets.find(b => b.name === 'investor-files');
-				
-				// Check if bucket exists (you created it manually)
-				if (!investorBucket) {
-					throw new Error('investor-files bucket not found. Please make sure you created the "investor-files" bucket in your Supabase dashboard and set it as public.');
-				}
-				
-				console.log('✅ investor-files bucket confirmed, attempting upload...');
+				// Skip bucket listing - directly attempt upload since bucket exists
+				console.log('✅ Proceeding with direct upload to investor-files bucket...');
 				
 				// Upload file to Supabase storage
 				const { data, error } = await supabase.storage
@@ -2249,7 +2235,14 @@
 					});
 				
 				if (error) {
-					throw new Error(`Upload failed: ${error.message}`);
+					// Provide specific error messages based on error type
+					if (error.message.includes('bucket') || error.message.includes('not found')) {
+						throw new Error(`Storage bucket access failed: ${error.message}. The bucket exists but may need additional permissions for anonymous users.`);
+					} else if (error.message.includes('policy') || error.message.includes('RLS')) {
+						throw new Error(`Permission denied: ${error.message}. Check storage policies for anonymous access.`);
+					} else {
+						throw new Error(`Upload failed: ${error.message}`);
+					}
 				}
 				
 				console.log('📤 Upload successful:', data);
@@ -2291,6 +2284,14 @@
 				
 			} catch (error) {
 				console.error('❌ Supabase upload failed:', error.message);
+				
+				// Provide helpful context based on error type
+				if (error.message.includes('bucket') || error.message.includes('not found')) {
+					console.error('💡 Suggestion: Check if bucket policies allow anonymous access');
+				} else if (error.message.includes('policy') || error.message.includes('RLS')) {
+					console.error('💡 Suggestion: Review Row Level Security policies for storage');
+				}
+				
 				throw error;
 			}
 		}
