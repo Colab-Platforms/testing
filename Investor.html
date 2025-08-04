@@ -2252,15 +2252,19 @@
 				};
 				
 				// Save ONLY to Supabase database (NO localStorage)
-				const { error: dbError } = await supabase
+				console.log('💾 Attempting to save file to database:', fileData);
+				const { data: insertResult, error: dbError } = await supabase
 					.from('uploaded_files')
-					.insert([fileData]);
+					.insert([fileData])
+					.select(); // Return the inserted data
 				
 				if (dbError) {
-					console.warn('Database save failed, but file uploaded to storage:', dbError.message);
-					// Still show the file even if database save fails
+					console.error('❌ Database save failed:', dbError.message);
+					console.error('💡 Error details:', dbError);
+					showError(`Database save failed: ${dbError.message}`);
+					// Don't throw error - still show file locally even if DB save fails
 				} else {
-					console.log('💾 File saved to database successfully');
+					console.log('✅ File saved to database successfully:', insertResult);
 				}
 				
 				// Show file immediately in current tab
@@ -2425,15 +2429,21 @@
 					console.log('📡 Loading files from Supabase database...');
 					
 					// Load from Supabase database
+					console.log('🔍 Querying database for files...');
 					const { data: files, error } = await supabase
 						.from('uploaded_files')
 						.select('*')
 						.order('id', { ascending: true });
 					
+					console.log('📊 Database query result:', { files, error, count: files?.length || 0 });
+					
 					if (error) {
 						console.error('❌ Error loading files from database:', error);
+						console.error('💡 Error details:', error);
 						if (error.message.includes('relation "uploaded_files" does not exist')) {
 							console.log('⚠️ uploaded_files table does not exist. Please create the database table.');
+						} else if (error.message.includes('policy')) {
+							console.log('⚠️ Database access denied. Check RLS policies for uploaded_files table.');
 						}
 						return;
 					}
