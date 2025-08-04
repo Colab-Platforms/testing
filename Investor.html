@@ -1906,33 +1906,16 @@
 			}, 500);
 		}
 		
-		// Hide admin login button
+		// Hide admin login button (no longer needed - login handled on separate page)
 		function hideAdminLoginButton() {
-			const loginBtn = document.getElementById('adminLoginBtn');
-			if (loginBtn) {
-				loginBtn.style.display = 'none';
-			}
+			// Admin login is now handled on separate investor-admin.html page
+			// This function kept for compatibility but does nothing
 		}
 
-		// Admin login function
+		// Admin login function - redirects to admin page
 		function adminLogin() {
-			const email = prompt('Admin Email:');
-			const password = prompt('Admin Password:');
-			
-			console.log('Email entered:', email);
-			console.log('Expected email:', ADMIN_CREDENTIALS.email);
-			console.log('Password match:', password === ADMIN_CREDENTIALS.password);
-			
-			if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
-				isLoggedIn = true;
-				localStorage.setItem('adminLoggedIn', 'true');
-				showAdminControls();
-				alert('✅ Admin login successful!');
-				loadUploadedFiles();
-			} else {
-				console.log('❌ Invalid credentials provided');
-				alert('❌ Invalid credentials! Please use:\nEmail: admin@empowerindia.com\nPassword: admin123');
-			}
+			// Redirect to separate admin login page
+			window.location.href = 'investor-admin.html';
 		}
 
 		// Admin logout function
@@ -1940,8 +1923,11 @@
 			isLoggedIn = false;
 			localStorage.removeItem('adminLoggedIn');
 			hideAdminControls();
-			alert('🚪 Logged out successfully!');
-			location.reload();
+			alert('🚪 Logged out successfully! Redirecting to admin login...');
+			// Redirect to admin login page instead of reloading
+			setTimeout(() => {
+				window.location.href = 'investor-admin.html';
+			}, 1000);
 		}
 
 		// Show admin controls
@@ -3172,51 +3158,27 @@
 			return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 		}
 
-		// Add admin login button to page
-		function addAdminLoginButton() {
-			if (!document.getElementById('adminLoginBtn')) {
-				const loginBtn = document.createElement('button');
-				loginBtn.id = 'adminLoginBtn';
-				loginBtn.innerHTML = '🔐 Admin Login';
-				loginBtn.style.cssText = `
-					position: fixed;
-					top: 20px;
-					left: 20px;
-					background: #e74c3c;
-					color: white;
-					border: none;
-					padding: 12px 18px;
-					border-radius: 8px;
-					cursor: pointer;
-					z-index: 10000;
-					font-weight: bold;
-					font-size: 14px;
-					box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-				`;
-				loginBtn.onclick = adminLogin;
-				document.body.appendChild(loginBtn);
-				console.log('✅ Admin login button added to page');
-			}
+		// Check if user needs to login (redirect to admin page)
+		function checkAdminAccess() {
+			// If user is not logged in and tries to access admin features, redirect to admin page
+			// This function can be called when admin features are needed
 		}
 
 		// Initialize when page loads
 		document.addEventListener('DOMContentLoaded', function() {
 			setTimeout(() => {
-				addAdminLoginButton();
+				// Remove addAdminLoginButton() call - admin login now handled on separate page
 				addAdminButtons();
 				loadSavedTabs(); // Load custom tabs first
 				loadUploadedFiles(); // Then load uploaded files
 			}, 1000); // Delay to ensure DOM is fully loaded
 			
-			// Secret admin access: Ctrl+Shift+A
+			// Secret admin access: Ctrl+Shift+A - redirects to admin page
 			document.addEventListener('keydown', function(e) {
 				if (e.ctrlKey && e.shiftKey && e.key === 'A') {
 					if (!isLoggedIn) {
-						const loginBtn = document.getElementById('adminLoginBtn');
-						if (loginBtn) {
-							loginBtn.style.display = 'block';
-							loginBtn.click();
-						}
+						// Redirect to admin login page
+						window.location.href = 'investor-admin.html';
 					}
 				}
 			});
@@ -3234,6 +3196,26 @@
 	<script
 		type="application/ld+json">[{"@context":"https:\/\/schema.org","@type":"WebSite","url":"https:\/\/empowerindia.in\/en-in","potentialAction":{"@type":"SearchAction","target":"https:\/\/empowerindia.in\/en-in?s={search_term_string}","query-input":"required name=search_term_string"}},{"@context":"https:\/\/schema.org","@type":"WebPage","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/empowerindia.in\/en-in\/"},"headline":"Downloads","datePublished":"2021-07-02T15:52:55+05:30","dateModified":"2025-05-29T13:42:13+05:30","description":""}]</script>
 	<!-- /SCHEMA END -->
+	
+	<!-- Subtle Admin Access Link -->
+	<a href="investor-admin.html" style="
+		position: fixed;
+		bottom: 20px;
+		right: 20px;
+		background: rgba(231, 76, 60, 0.1);
+		color: #e74c3c;
+		padding: 8px 12px;
+		border-radius: 20px;
+		text-decoration: none;
+		font-size: 11px;
+		border: 1px solid rgba(231, 76, 60, 0.3);
+		transition: all 0.3s ease;
+		opacity: 0.7;
+		z-index: 9999;
+	" onmouseover="this.style.opacity='1'; this.style.background='rgba(231, 76, 60, 0.2)'; this.style.transform='translateY(-2px)'" 
+	   onmouseout="this.style.opacity='0.7'; this.style.background='rgba(231, 76, 60, 0.1)'; this.style.transform='translateY(0)'">
+		🛡️ Admin
+	</a>
 </body>
 
 </html>
