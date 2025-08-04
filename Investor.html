@@ -3036,17 +3036,32 @@
 		async function deleteCustomTab(adminTabId, publicTabId) {
 			if (confirm(`🗑️ Are you sure you want to delete this entire tab?\n\nThis will remove:\n- The tab from navigation\n- All files uploaded to this tab\n- This action cannot be undone!`)) {
 				try {
-					// Remove uploaded files from Supabase database
+					// Remove from Supabase database - both the custom tab and its files
 					if (supabase) {
-						const { error } = await supabase
+						// Delete all files associated with this tab
+						const { error: filesError } = await supabase
 							.from('uploaded_files')
 							.delete()
-							.eq('tab_name', adminTabId);
+							.eq('tabid', adminTabId)
+							.neq('type', 'custom_tab'); // Delete files, not the tab entry yet
 						
-						if (error) {
-							console.error('Error deleting files from database:', error);
+						if (filesError) {
+							console.error('Error deleting files from database:', filesError);
 						} else {
 							console.log('✅ Files deleted from Supabase database for tab:', adminTabId);
+						}
+
+						// Delete the custom tab itself from database
+						const { error: tabError } = await supabase
+							.from('uploaded_files')
+							.delete()
+							.eq('tabid', adminTabId)
+							.eq('type', 'custom_tab'); // Delete the tab entry
+						
+						if (tabError) {
+							console.error('Error deleting tab from database:', tabError);
+						} else {
+							console.log('✅ Custom tab deleted from Supabase database:', adminTabId);
 						}
 					}
 					
