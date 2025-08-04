@@ -1889,6 +1889,8 @@
 		// Check admin login on page load
 		function checkAdminLogin() {
 			const storedLogin = localStorage.getItem('adminLoggedIn');
+			console.log('🔍 Checking admin login status:', storedLogin);
+			
 			if (storedLogin === 'true') {
 				isLoggedIn = true;
 				console.log('✅ Admin logged in, showing controls');
@@ -1946,10 +1948,15 @@
 
 		// Show admin controls
 		function showAdminControls() {
-			document.querySelectorAll('.admin-edit-icon').forEach(icon => {
+			console.log('🔧 showAdminControls() called');
+			
+			const adminIcons = document.querySelectorAll('.admin-edit-icon');
+			console.log('📤 Found admin icons:', adminIcons.length);
+			
+			adminIcons.forEach((icon, index) => {
 				icon.style.display = 'inline';
 				icon.style.opacity = '1';
-				console.log('Showed admin icon:', icon);
+				console.log(`Showed admin icon ${index}:`, icon);
 			});
 			
 			// Show admin control containers
@@ -3260,8 +3267,11 @@
 		// Initialize when page loads
 		document.addEventListener('DOMContentLoaded', function() {
 			setTimeout(async () => {
-				// Remove addAdminLoginButton() call - admin login now handled on separate page
+				// First add admin buttons to DOM (hidden initially)
 				addAdminButtons();
+				// Then check admin login status and show controls if logged in
+				checkAdminLogin();
+				// Load content
 				await loadSavedTabs(); // Load custom tabs first
 				await loadUploadedFiles(); // Then load uploaded files
 			}, 1000); // Delay to ensure DOM is fully loaded
