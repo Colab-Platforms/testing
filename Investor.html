@@ -1822,9 +1822,10 @@
 		async function checkAdminLogin() {
 			console.log('🔐 checkAdminLogin() called');
 			
-			const storedLogin = localStorage.getItem('adminLoggedIn');
+			// Check admin login from sessionStorage (simple and reliable)
+			const adminLoggedIn = sessionStorage.getItem('adminLoggedIn');
 			
-			if (storedLogin === 'true') {
+			if (adminLoggedIn === 'true') {
 				isLoggedIn = true;
 				console.log('✅ Admin logged in, showing controls');
 				showAdminControls();
@@ -1850,13 +1851,16 @@
 		}
 
 		// Admin login function
-		function adminLogin() {
+		async function adminLogin() {
 			const email = prompt('Admin Email:');
 			const password = prompt('Admin Password:');
 			
 			if (email === ADMIN_CREDENTIALS.email && password === ADMIN_CREDENTIALS.password) {
 				isLoggedIn = true;
-				localStorage.setItem('adminLoggedIn', 'true');
+				
+				// Store admin session in sessionStorage (reliable and simple)
+				sessionStorage.setItem('adminLoggedIn', 'true');
+				
 				showAdminControls();
 				alert('✅ Admin login successful!');
 				loadUploadedFiles();
@@ -1866,9 +1870,12 @@
 		}
 
 		// Admin logout function
-		function adminLogout() {
+		async function adminLogout() {
 			isLoggedIn = false;
-			localStorage.removeItem('adminLoggedIn');
+			
+			// Clear session from sessionStorage
+			sessionStorage.removeItem('adminLoggedIn');
+			
 			hideAdminControls();
 			alert('🚪 Logged out successfully!');
 			location.reload();
@@ -1876,9 +1883,15 @@
 
 		// Show admin controls
 		function showAdminControls() {
-			document.querySelectorAll('.admin-edit-icon').forEach(icon => {
+			console.log('🔧 showAdminControls() called');
+			
+			const adminIcons = document.querySelectorAll('.admin-edit-icon');
+			console.log('Found', adminIcons.length, 'admin icons');
+			
+			adminIcons.forEach(icon => {
 				icon.style.display = 'inline';
 				icon.style.opacity = '1';
+				console.log('Showed admin icon:', icon);
 			});
 			
 			// Show admin control containers
@@ -1890,15 +1903,6 @@
 			Object.keys(tabMapping).forEach(adminTabId => {
 				const publicTabId = tabMapping[adminTabId];
 				addAdminControlsToTab(publicTabId);
-			});
-			
-			// Also check for any custom tabs that might not be in the main mapping
-			const allTabs = JSON.parse(localStorage.getItem('investorTabs') || '{}');
-			Object.keys(allTabs).forEach(tabId => {
-				const tabData = allTabs[tabId];
-				if (tabData && tabData.publicId) {
-					addAdminControlsToTab(tabData.publicId);
-				}
 			});
 			
 			// Show logout button
@@ -2342,8 +2346,9 @@
 					
 					if (error) {
 						console.error('❌ Error loading files from database:', error);
-						console.log('📁 Trying localStorage fallback...');
-						loadFromLocalStorageFallback();
+						if (error.message.includes('relation "uploaded_files" does not exist')) {
+							console.log('⚠️ uploaded_files table does not exist. Please create the database table.');
+						}
 						return;
 					}
 					
@@ -2369,33 +2374,10 @@
 						console.log('📭 No files found in database');
 					}
 				} else {
-					console.log('⚠️ Supabase not available, using localStorage fallback');
-					loadFromLocalStorageFallback();
+					console.error('❌ Supabase not available. Cannot load files.');
 				}
 			} catch (error) {
 				console.error('❌ Error in loadUploadedFiles:', error);
-				console.log('📁 Trying localStorage fallback...');
-				loadFromLocalStorageFallback();
-			}
-		}
-		
-		// Fallback function to load from localStorage
-		function loadFromLocalStorageFallback() {
-			try {
-				const allFiles = JSON.parse(localStorage.getItem('uploadedFiles') || '{}');
-				console.log('Loading files from localStorage fallback:', allFiles);
-				
-				Object.keys(allFiles).forEach(adminTabId => {
-					console.log('Processing adminTabId:', adminTabId, 'files:', allFiles[adminTabId]);
-					if (allFiles[adminTabId] && allFiles[adminTabId].length > 0) {
-						allFiles[adminTabId].forEach(fileData => {
-							console.log('Loading file:', fileData.name, 'in tab:', adminTabId);
-							showFileInTab(adminTabId, fileData);
-						});
-					}
-				});
-			} catch (error) {
-				console.error('Error in localStorage fallback:', error);
 			}
 		}
 
